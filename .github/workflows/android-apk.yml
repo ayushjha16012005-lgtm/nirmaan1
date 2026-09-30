@@ -66,11 +66,13 @@ jobs:
       - name: Save error log on failure
         if: failure()
         run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git checkout -B build-log
-          cp gradle.log error.log || true
-          git add error.log
+          cp ../gradle.log error.log || cp gradle.log error.log || true
+          tail -n 200 error.log > error.txt || true
+          git add error.log error.txt
           git commit -m "chore: save build error log" || true
           git push origin build-log -f || true
 
