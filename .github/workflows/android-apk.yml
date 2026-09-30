@@ -62,7 +62,7 @@ jobs:
           cd android
           set -o pipefail
           ./gradlew assembleDebug --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/gradle.log" || {
-            ERR=$(tail -n 20 "$GITHUB_WORKSPACE/gradle.log" | tr '\r\n' ' ')
+            ERR=$(grep -A 10 "FAILURE: Build failed with an exception" "$GITHUB_WORKSPACE/gradle.log" | tr '\r\n' ' ')
             echo "::error title=Gradle Failure::$ERR"
             exit 1
           }
