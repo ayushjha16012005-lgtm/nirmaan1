@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Meta Tags -->
+  <title>Nirmaan — India's Direct & Fair Construction Labour Platform</title>
+  <meta name="description" content="Connect directly with verified, skilled construction workers, carpenters, plumbers, and painters in India. No middleman thekedar, full wages for workers, 20% savings for builders.">
+  <meta name="keywords" content="construction workers, plumbers, painters, electricians, raj mistri, direct hiring, no middleman, india, waitlist, local labour, escrow payments">
+  <meta name="author" content="Nirmaan India">
+  
+  <!-- Icon & theme -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="theme-color" content="#E8621A">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Tiro+Devanagari+Hindi:ital@0;1&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="light-theme">
+
+  <noscript><p style="padding:24px;text-align:center">Nirmaan needs JavaScript enabled to run.</p></noscript>
+
+  <!-- Header Component Container -->
+  <header id="app-header"></header>
+
+  <!-- Route View Injector -->
+  <main id="app-content" class="fade-in"></main>
+
+  <!-- Footer Component Container -->
+  <footer id="app-footer"></footer>
+
+  <!-- App Logic (Module Router) -->
+  <script type="module" src="js/app.js"></script>
+
+  <!-- Floating AI Voice Assistant Button -->
+  <a href="#/voice-assistant" id="ai-fab" style="
+    position:fixed; bottom:30px; right:30px; z-index:9999;
+    width:64px; height:64px; border-radius:50%;
+    background:linear-gradient(135deg, #ff8a50, var(--saffron));
+    color:white; font-size:1.6rem; text-decoration:none;
+    box-shadow:0 6px 20px rgba(232,98,26,0.45);
+    display:flex; align-items:center; justify-content:center;
+    transition:transform 0.2s ease;
+    animation: nirmaan-fab-glow 2s ease-in-out infinite;
+  " title="AI Voice Assistant (Saarthi / Disha)">🎙️</a>
+
+  <style>
+    @keyframes nirmaan-fab-glow {
+      0%, 100% { box-shadow: 0 6px 20px rgba(232,98,26,0.45); }
+      50% { box-shadow: 0 6px 30px rgba(232,98,26,0.7); }
+    }
+    #ai-fab:hover { transform: scale(1.1); }
+    @keyframes nirmaan-pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255,87,34,0.6); }
+      70% { box-shadow: 0 0 0 30px rgba(255,87,34,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,87,34,0); }
+    }
+  </style>
+
+</body>
+</html>

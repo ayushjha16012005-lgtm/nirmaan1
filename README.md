@@ -176,13 +176,20 @@ npm run dev
 
 The frontend runs on **http://localhost:5173** by default.
 
-### Netlify deployment
+### Vercel Deployment
 
-The repository-root `netlify.toml` configures Netlify to build the frontend inside `nirmaan2` and publish its `dist` directory.
+The frontend SPA is deployed on [Vercel](https://vercel.com):
+- **Root Directory**: `./` (repository root)
+- **Framework Preset**: `Vite`
+- **Build Command**: `npm run build`
+- **Output Directory**: `dist`
+- **Install Command**: `npm ci`
+- **Node.js Version**: `22` (configured in `.nvmrc` and `engines`)
+- **Environment Variables**:
+  - `VITE_SUPABASE_URL`
+  - `VITE_SUPABASE_ANON_KEY`
 
-All features including Karigar Search, Map Discovery, Hiring, Live Tracking & Escrow Payments, Construction Projects, AI Voice Assistant (Saarthi / Disha), and Multilingual UI are fully active.
-
-Navigation uses hash URLs (for example, `/#/projects`), with catch-all redirects configured in Netlify headers/redirects.
+The old Netlify site (`netlify.toml`) now exclusively serves a 301 permanent redirect forwarding all traffic to the new Vercel production domain.
 
 ---
 
