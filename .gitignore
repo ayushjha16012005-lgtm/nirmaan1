@@ -10,8 +10,16 @@ build/
 
 # Environment variables
 .env
+.env.*
 .env.local
 .env.*.local
+
+# Android & Keystores
+*.jks
+*.keystore
+android/app/build/
+android/.gradle/
+local.properties
 
 # Logs
 npm-debug.log*
