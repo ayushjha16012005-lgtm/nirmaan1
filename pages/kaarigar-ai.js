@@ -18,7 +18,9 @@ export default {
     let currentPersona = "SAARTHI";
     let userSpeech = "—";
     let aiResponse = "नमस्ते भाई! मैं निर्माण से सारथी हूँ। बताइए, काम, मज़दूरी या योजनाओं में आपकी क्या सहायता करूँ?";
-    let statusText = "माइक दबाएं और बोलें (Mic dabao aur bolo)";
+    let statusText = SpeechRecognitionAPI 
+      ? "माइक दबाएं और बोलें (Mic dabao aur bolo)" 
+      : "Voice isn't supported here. Type your message instead.";
 
     function render() {
       container.innerHTML = `
@@ -60,7 +62,7 @@ export default {
           </div>
 
           <!-- Conversation Display Box -->
-          <div class="card" style="text-align: left; padding: 18px; margin-bottom: 20px; background: var(--bg-secondary); border: 1px solid var(--border-light);">
+          <div class="card" style="text-align: left; padding: 18px; margin-bottom: 16px; background: var(--bg-secondary); border: 1px solid var(--border-light);">
             
             <div style="margin-bottom: 14px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
               <span style="font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">YOU (आप)</span>
@@ -79,6 +81,15 @@ export default {
             </div>
 
           </div>
+
+          <!-- Typed Message Input (Fallback & Accessibility) -->
+          <form id="ai-text-form" style="display: flex; gap: 8px; margin-bottom: 18px;" onsubmit="return false;">
+            <input id="ai-text-input" type="text" placeholder="सवाल लिखें (Type your message...)" 
+              style="flex: 1; padding: 12px 16px; border-radius: var(--radius-full); border: 1px solid var(--border-light); background: var(--bg-secondary); color: var(--text-main); font-size: 0.9rem; outline: none;" />
+            <button id="btn-send-text" type="submit" class="btn btn-primary" style="border-radius: var(--radius-full); padding: 10px 18px; font-weight: 700; white-space: nowrap;">
+              भेजें ➔
+            </button>
+          </form>
 
           <!-- Quick Suggestion Chips -->
           <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 20px;">
@@ -115,6 +126,19 @@ export default {
         render();
         voice.speak(aiResponse, "hi-IN", "DISHA");
       };
+
+      // Typed Form Submit
+      const textForm = container.querySelector("#ai-text-form");
+      const textInput = container.querySelector("#ai-text-input");
+      if (textForm && textInput) {
+        textForm.onsubmit = (e) => {
+          e.preventDefault();
+          const query = textInput.value.trim();
+          if (query) {
+            handleUserQuery(query);
+          }
+        };
+      }
 
       // Voice Orb Click
       container.querySelector("#voice-orb-btn").onclick = () => {
@@ -155,7 +179,9 @@ export default {
 
       const result = await voice.askAI(query, currentPersona);
       aiResponse = result.display;
-      statusText = "Mic dabao aur bolo";
+      statusText = SpeechRecognitionAPI 
+        ? "माइक दबाएं और बोलें (Mic dabao aur bolo)" 
+        : "Voice isn't supported here. Type your message instead.";
       render();
 
       voice.speak(result.spoken || result.display, result.langCode || "hi-IN", currentPersona);
@@ -163,7 +189,13 @@ export default {
 
     function startSpeechRecognition() {
       if (!SpeechRecognitionAPI) {
-        alert("Speech Recognition is not supported in this browser. Please use Google Chrome or Edge.");
+        const fallbackMsg = "Voice isn't supported here. Type your message instead.";
+        statusText = fallbackMsg;
+        const statusEl = container.querySelector("#ai-status-label");
+        if (statusEl) statusEl.textContent = fallbackMsg;
+        showToast(fallbackMsg);
+        const input = container.querySelector("#ai-text-input");
+        if (input) input.focus();
         return;
       }
 
