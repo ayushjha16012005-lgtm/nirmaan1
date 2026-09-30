@@ -61,14 +61,18 @@ jobs:
         run: |
           cd android
           set -o pipefail
-          ./gradlew assembleDebug --stacktrace 2>&1 | tee ../gradle.log
+          ./gradlew assembleDebug --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/gradle.log" || {
+            ERR=$(tail -n 20 "$GITHUB_WORKSPACE/gradle.log" | tr '\r\n' ' ')
+            echo "::error title=Gradle Failure::$ERR"
+            exit 1
+          }
 
       - name: Publish Build Summary
         if: always()
         run: |
-          echo "### Gradle Build Log (Last 80 lines)" >> $GITHUB_STEP_SUMMARY
+          echo "### Gradle Build Log (Last 60 lines)" >> $GITHUB_STEP_SUMMARY
           echo '```text' >> $GITHUB_STEP_SUMMARY
-          tail -n 80 gradle.log >> $GITHUB_STEP_SUMMARY || true
+          tail -n 60 "$GITHUB_WORKSPACE/gradle.log" >> $GITHUB_STEP_SUMMARY || echo "No log found" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Upload Gradle Build Log
