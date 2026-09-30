@@ -1,0 +1,79 @@
+/* NIRMAAN Design System — Design Tokens & Themes */
+:root {
+  /* Brand Palette */
+  --saffron: #E8621A;
+  --saffron-light: #FF8A50;
+  --saffron-dark: #C44C0E;
+  --saffron-glow: rgba(232, 98, 26, 0.12);
+  --saffron-border: rgba(232, 98, 26, 0.25);
+
+  --green: #2D6A4F;
+  --green-light: #40916C;
+  --green-glow: rgba(45, 106, 79, 0.12);
+
+  --gold: #F4A522;
+  --gold-glow: rgba(244, 165, 34, 0.15);
+
+  --stone: #78716C;
+  --danger: #DC2626;
+  --danger-glow: rgba(220, 38, 38, 0.12);
+
+  /* Light Theme (Warm off-white / Cream foundation) */
+  --bg-body: #FBF9F5;
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F7F4EE;
+  --bg-tertiary: #EFECE6;
+  --bg-card: #FFFFFF;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+
+  --text-main: #1C1917;
+  --text-muted: #78716C;
+  --text-light: #A8A29E;
+  --text-inverse: #FFFFFF;
+
+  --border-light: #E7E5E4;
+  --border-subtle: #F0EEE9;
+  --border-saffron: rgba(232, 98, 26, 0.3);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(28, 25, 23, 0.04);
+  --shadow-md: 0 8px 24px rgba(28, 25, 23, 0.07);
+  --shadow-lg: 0 16px 40px rgba(28, 25, 23, 0.10);
+  --shadow-saffron: 0 10px 25px rgba(232, 98, 26, 0.28);
+
+  /* Radii */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+
+  /* Layout */
+  --header-height: 68px;
+  --bottom-nav-height: 72px;
+  --max-w-app: 1200px;
+  --max-w-mobile: 480px;
+}
+
+/* Dark Theme Overrides */
+body.dark-theme {
+  --bg-body: #121110;
+  --bg-primary: #1C1A18;
+  --bg-secondary: #25221F;
+  --bg-tertiary: #2F2C28;
+  --bg-card: #1C1A18;
+  --bg-glass: rgba(28, 26, 24, 0.88);
+
+  --text-main: #F5F5F4;
+  --text-muted: #A8A29E;
+  --text-light: #78716C;
+  --text-inverse: #1C1917;
+
+  --border-light: #2E2B27;
+  --border-subtle: #25221F;
+  --border-saffron: rgba(232, 98, 26, 0.45);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --shadow-saffron: 0 10px 30px rgba(232, 98, 26, 0.35);
+}

@@ -1,0 +1,313 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  WORKER
+  CLIENT
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum JobStatus {
+  OPEN
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum BookingStatus {
+  REQUESTED
+  ACCEPTED
+  CONFIRMED
+  WORKER_ON_WAY
+  ARRIVED
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+  CANCELLED
+  DISPUTED
+}
+
+enum DocumentType {
+  IDENTITY_PROOF
+  ADDRESS_PROOF
+  SKILL_CERTIFICATE
+  TRADE_LICENSE
+  OTHER
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String?        @unique
+  phone         String         @unique
+  passwordHash  String?
+  supabaseUid   String?        @unique
+  role          UserRole       @default(CLIENT)
+  status        UserStatus     @default(ACTIVE)
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  workerProfile WorkerProfile?
+  clientProfile ClientProfile?
+  notifications Notification[]
+  auditLogs     AuditLog[]     @relation("UserAuditLogs")
+
+  @@index([phone])
+  @@index([role])
+  @@index([status])
+  @@map("users")
+}
+
+model WorkerProfile {
+  id                 String             @id @default(uuid())
+  userId             String             @unique @map("user_id")
+  name               String
+  nameEn             String?            @map("name_en")
+  photoUrl           String?            @map("photo_url")
+  trade              String
+  bio                String?
+  experienceYears    Int                @default(0) @map("experience_years")
+  dailyRate          Int                @map("daily_rate")
+  city               String
+  latitude           Float?
+  longitude          Float?
+  verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
+  rating             Float              @default(0.0)
+  ratingCount        Int                @default(0) @map("rating_count")
+  totalJobs          Int                @default(0) @map("total_jobs")
+  isAvailable        Boolean            @default(true) @map("is_available")
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents          WorkerDocument[]
+  availabilities     WorkerAvailability[]
+  applications       JobApplication[]
+  bookings           Booking[]
+  reviews            Review[]
+
+  @@index([trade])
+  @@index([city])
+  @@index([verificationStatus])
+  @@index([isAvailable])
+  @@index([dailyRate])
+  @@map("worker_profiles")
+}
+
+model ClientProfile {
+  id        String    @id @default(uuid())
+  userId    String    @unique @map("user_id")
+  name      String
+  phone     String
+  city      String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobs      Job[]
+  bookings  Booking[]
+  reviews   Review[]
+
+  @@map("client_profiles")
+}
+
+model WorkerDocument {
+  id                 String             @id @default(uuid())
+  workerId           String             @map("worker_id")
+  documentType       DocumentType       @map("document_type")
+  filePath           String             @map("file_path")
+  fileMimeType       String?            @map("file_mime_type")
+  fileSizeBytes      Int?               @map("file_size_bytes")
+  verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
+  verifiedAt         DateTime?          @map("verified_at")
+  verifiedBy         String?            @map("verified_by")
+  rejectionReason    String?            @map("rejection_reason")
+  uploadedAt         DateTime           @default(now()) @map("uploaded_at")
+
+  worker             WorkerProfile      @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  @@index([workerId])
+  @@index([verificationStatus])
+  @@map("worker_documents")
+}
+
+model WorkerAvailability {
+  id          String   @id @default(uuid())
+  workerId    String   @map("worker_id")
+  dayOfWeek   Int      @map("day_of_week") // 0=Sunday, 1=Monday, ..., 6=Saturday
+  startTime   String   @map("start_time")  // "09:00"
+  endTime     String   @map("end_time")    // "18:00"
+  isAvailable Boolean  @default(true) @map("is_available")
+
+  worker      WorkerProfile @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  @@unique([workerId, dayOfWeek])
+  @@map("worker_availability")
+}
+
+model Location {
+  id         String   @id @default(uuid())
+  latitude   Float
+  longitude  Float
+  address    String
+  city       String
+  state      String?
+  postalCode String?  @map("postal_code")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  jobs       Job[]
+
+  @@index([city])
+  @@map("locations")
+}
+
+model Job {
+  id            String          @id @default(uuid())
+  clientId      String          @map("client_id")
+  locationId    String?         @map("location_id")
+  title         String
+  description   String
+  tradeRequired String          @map("trade_required")
+  budgetMin     Int?            @map("budget_min")
+  budgetMax     Int?            @map("budget_max")
+  scheduledDate DateTime        @map("scheduled_date")
+  status        JobStatus       @default(OPEN)
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+
+  client        ClientProfile   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  location      Location?       @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  applications  JobApplication[]
+  bookings      Booking[]
+  reviews       Review[]
+
+  @@index([tradeRequired])
+  @@index([status])
+  @@index([scheduledDate])
+  @@map("jobs")
+}
+
+model JobApplication {
+  id           String            @id @default(uuid())
+  jobId        String            @map("job_id")
+  workerId     String            @map("worker_id")
+  proposedRate Int?              @map("proposed_rate")
+  coverNote    String?           @map("cover_note")
+  status       ApplicationStatus @default(PENDING)
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+
+  job          Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  worker       WorkerProfile     @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, workerId])
+  @@index([status])
+  @@map("job_applications")
+}
+
+model Booking {
+  id            String        @id @default(uuid())
+  jobId         String?       @map("job_id")
+  clientId      String        @map("client_id")
+  workerId      String        @map("worker_id")
+  scheduledDate DateTime      @map("scheduled_date")
+  scheduledTime String        @default("09:00") @map("scheduled_time")
+  agreedRate    Int           @map("agreed_rate")
+  status        BookingStatus @default(REQUESTED)
+  notes         String?
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  job           Job?          @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  client        ClientProfile @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  worker        WorkerProfile @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  reviews       Review[]
+
+  @@index([clientId])
+  @@index([workerId])
+  @@index([status])
+  @@index([scheduledDate])
+  @@map("bookings")
+}
+
+model Review {
+  id        String         @id @default(uuid())
+  jobId     String?        @map("job_id")
+  bookingId String?        @map("booking_id")
+  workerId  String         @map("worker_id")
+  clientId  String         @map("client_id")
+  rating    Int            // 1 to 5
+  comment   String?
+  createdAt DateTime       @default(now()) @map("created_at")
+
+  job       Job?           @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  booking   Booking?       @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  worker    WorkerProfile  @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  client    ClientProfile  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([bookingId])
+  @@index([workerId])
+  @@index([clientId])
+  @@map("reviews")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  title     String
+  message   String
+  type      String   @default("INFO")
+  read      Boolean  @default(false)
+  data      Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  actorId      String?  @map("actor_id")
+  action       String
+  resourceType String   @map("resource_type")
+  resourceId   String?  @map("resource_id")
+  metadata     Json?
+  ipAddress    String?  @map("ip_address")
+  requestId    String?  @map("request_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  actor        User?    @relation("UserAuditLogs", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId])
+  @@index([action])
+  @@index([resourceType])
+  @@map("audit_logs")
+}
