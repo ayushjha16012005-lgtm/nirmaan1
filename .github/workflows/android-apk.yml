@@ -63,6 +63,14 @@ jobs:
           set -o pipefail
           ./gradlew assembleDebug --stacktrace 2>&1 | tee ../gradle.log
 
+      - name: Publish Build Summary
+        if: always()
+        run: |
+          echo "### Gradle Build Log (Last 80 lines)" >> $GITHUB_STEP_SUMMARY
+          echo '```text' >> $GITHUB_STEP_SUMMARY
+          tail -n 80 gradle.log >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
       - name: Upload Gradle Build Log
         if: always()
         uses: actions/upload-artifact@v4
