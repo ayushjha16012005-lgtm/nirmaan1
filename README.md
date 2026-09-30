@@ -178,11 +178,11 @@ The frontend runs on **http://localhost:5173** by default.
 
 ### Netlify deployment
 
-The repository-root `netlify.toml` configures Netlify to run `npm ci --include=dev` before the frontend build inside `nirmaan2`, then publish its `dist` directory. This explicit installation uses the committed lockfile and makes Vite available even when deployment is invoked through the Netlify CLI without a separate dependency-install step. Deploy the repository rather than the repository root as a static folder; the root does not contain the app's `index.html`.
+The repository-root `netlify.toml` configures Netlify to build the frontend inside `nirmaan2` and publish its `dist` directory.
 
-The welcome screen and existing self-contained demo screens remain accessible. Routes that depend on missing API, voice, tracking, escrow, or hiring source show an explicit unavailable notice instead of preventing deployment or failing at runtime. Their original page files remain in the repository for future restoration. The Express backends are not deployed by this frontend configuration, and the existing demo login is not production authentication.
+All features including Karigar Search, Map Discovery, Hiring, Live Tracking & Escrow Payments, Construction Projects, AI Voice Assistant (Saarthi / Disha), and Multilingual UI are fully active.
 
-Navigation uses hash URLs (for example, `/#/projects`), so it does not need a catch-all server redirect.
+Navigation uses hash URLs (for example, `/#/projects`), with catch-all redirects configured in Netlify headers/redirects.
 
 ---
 

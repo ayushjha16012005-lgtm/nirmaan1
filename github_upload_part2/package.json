@@ -1,7 +1,7 @@
 {
   "name": "nirmaan",
   "version": "1.0.0",
-  "description": "",
+  "description": "Nirmaan — India's Direct & Fair Construction Labour Platform",
   "main": "index.js",
   "scripts": {
     "dev": "vite",
@@ -16,9 +16,6 @@
     "@supabase/supabase-js": "^2.117.2",
     "leaflet": "^1.9.4",
     "vanilla-tilt": "^1.8.1",
-    "vite": "^8.3.1"
-  },
-  "engines": {
-    "node": "^20.19.0 || >=22.12.0"
+    "vite": "^6.2.0"
   }
 }

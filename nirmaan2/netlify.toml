@@ -1,6 +1,5 @@
-# Netlify deploy configuration for Nirmaan
+# Netlify deploy configuration for Nirmaan frontend
 [build]
-  base = "nirmaan2"
   command = "npm run build"
   publish = "dist"
 

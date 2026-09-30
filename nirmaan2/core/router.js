@@ -1,38 +1,41 @@
 /* NIRMAAN Core Hash Router */
 import { store } from "./store.js";
 import { t } from "./i18n.js";
-
-const unavailable = () => import("../pages/unavailable.js");
+import { api } from "../services/api.js";
 
 const routes = [
   { pattern: /^#\/?$/, loader: () => import("../pages/splash.js"), default: true },
   { pattern: /^#\/auth$/, loader: () => import("../pages/auth.js") },
   { pattern: /^#\/onboarding$/, loader: () => import("../pages/onboarding.js") },
-  { pattern: /^#\/user-home$/, loader: unavailable, feature: "Find Kaarigars" },
-  { pattern: /^#\/find$/, loader: unavailable, feature: "Find Kaarigars" },
-  { pattern: /^#\/search$/, loader: unavailable, feature: "Find Kaarigars" },
-  { pattern: /^#\/kaarigar\/(.+)$/, loader: unavailable, feature: "Kaarigar Details" },
-  { pattern: /^#\/hire\/(.+)$/, loader: unavailable, feature: "Hire a Kaarigar" },
-  { pattern: /^#\/track\/(.+)$/, loader: unavailable, feature: "Live Tracking & Payments" },
-  { pattern: /^#\/projects$/, loader: unavailable, feature: "Projects" },
-  { pattern: /^#\/user-profile$/, loader: unavailable, feature: "Customer Dashboard" },
-  { pattern: /^#\/customer-dashboard$/, loader: unavailable, feature: "Customer Dashboard" },
-  { pattern: /^#\/kaarigar-home$/, loader: unavailable, feature: "Worker Dashboard" },
-  { pattern: /^#\/worker-dashboard$/, loader: unavailable, feature: "Worker Dashboard" },
-  { pattern: /^#\/kaarigar-ai$/, loader: unavailable, feature: "AI Voice Assistant" },
-  { pattern: /^#\/voice-assistant$/, loader: unavailable, feature: "AI Voice Assistant" },
-  { pattern: /^#\/ai$/, loader: unavailable, feature: "AI Voice Assistant" },
+  { pattern: /^#\/user-home$/, loader: () => import("../pages/user-home.js") },
+  { pattern: /^#\/find$/, loader: () => import("../pages/user-home.js") },
+  { pattern: /^#\/search$/, loader: () => import("../pages/user-home.js") },
+  { pattern: /^#\/kaarigar\/(.+)$/, loader: () => import("../pages/kaarigar-detail.js") },
+  { pattern: /^#\/hire\/(.+)$/, loader: () => import("../pages/hire.js") },
+  { pattern: /^#\/track\/(.+)$/, loader: () => import("../pages/track.js") },
+  { pattern: /^#\/projects$/, loader: () => import("../pages/projects.js") },
+  { pattern: /^#\/user-profile$/, loader: () => import("../pages/user-profile.js") },
+  { pattern: /^#\/customer-dashboard$/, loader: () => import("../pages/user-profile.js") },
+  { pattern: /^#\/kaarigar-home$/, loader: () => import("../pages/kaarigar-home.js") },
+  { pattern: /^#\/worker-dashboard$/, loader: () => import("../pages/kaarigar-home.js") },
+  { pattern: /^#\/kaarigar-ai$/, loader: () => import("../pages/kaarigar-ai.js") },
+  { pattern: /^#\/voice-assistant$/, loader: () => import("../pages/kaarigar-ai.js") },
+  { pattern: /^#\/ai$/, loader: () => import("../pages/kaarigar-ai.js") },
   { pattern: /^#\/kaarigar-profile$/, loader: () => import("../pages/kaarigar-profile.js") },
-  { pattern: /^#\/admin$/, loader: unavailable, feature: "Admin & Verification" }
+  { pattern: /^#\/admin$/, loader: () => import("../pages/admin.js") }
 ];
 
 let currentPage = null;
+let navToken = 0;
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
 let currentContainer = null;
 
 export class Router {
   constructor(container) {
     this.container = container;
-    this.navigationId = 0;
     currentContainer = container;
     window.addEventListener("hashchange", () => this.handleRoute());
   }
@@ -42,8 +45,8 @@ export class Router {
   }
 
   async handleRoute() {
-    const navigationId = ++this.navigationId;
     const hash = window.location.hash || "#/";
+    const token = ++navToken;
 
     let matchedRoute = null;
     let params = [];
@@ -75,45 +78,45 @@ export class Router {
 
     try {
       const module = await matchedRoute.loader();
+      if (token !== navToken) return; // a newer navigation started; drop this one
       const page = module.default || module;
-      await new Promise(resolve => setTimeout(resolve, 100));
-      if (navigationId !== this.navigationId) return;
       currentPage = page;
 
       const ctx = {
         params,
         store,
-        feature: matchedRoute.feature,
+        api,
         t
       };
 
-      this.container.innerHTML = "";
-      await page.mount(this.container, ctx);
-      if (navigationId !== this.navigationId) return;
-      this.container.classList.remove("fade-out");
-      this.container.classList.add("fade-in");
+      setTimeout(async () => {
+        if (token !== navToken) return;
+        this.container.innerHTML = "";
+        await page.mount(this.container, ctx);
+        this.container.classList.remove("fade-out");
+        this.container.classList.add("fade-in");
 
-      // Update active nav links
-      document.querySelectorAll("nav a, .bottom-nav a").forEach(link => {
-        const href = link.getAttribute("href");
-        if (href === hash || (hash === "#/" && href === "#/")) {
-          link.classList.add("active");
-          link.classList.add("active-nav");
-        } else {
-          link.classList.remove("active");
-          link.classList.remove("active-nav");
-        }
-      });
+        // Update active nav links
+        document.querySelectorAll("nav a, .bottom-nav a").forEach(link => {
+          const href = link.getAttribute("href");
+          if (href === hash || (hash === "#/" && href === "#/")) {
+            link.classList.add("active");
+            link.classList.add("active-nav");
+          } else {
+            link.classList.remove("active");
+            link.classList.remove("active-nav");
+          }
+        });
 
-      window.scrollTo(0, 0);
+        window.scrollTo(0, 0);
+      }, 100);
 
     } catch (err) {
-      if (navigationId !== this.navigationId) return;
       console.error("Route load error:", err);
       this.container.innerHTML = `
         <div class="container" style="text-align:center; padding: 60px 20px;">
           <h2>Error loading page</h2>
-          <p style="color:var(--text-muted); margin: 10px 0 20px;">${store.get("lang") === "hi" ? "यह पृष्ठ नहीं खुल सका। कृपया दोबारा कोशिश करें।" : "This page could not be opened. Please try again."}</p>
+          <p style="color:var(--text-muted); margin: 10px 0 20px;">${escapeHtml(err.message)}</p>
           <a href="#/" class="btn btn-primary">Go to Home</a>
         </div>
       `;

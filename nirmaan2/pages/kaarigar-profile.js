@@ -55,7 +55,7 @@ export default {
             <span>›</span>
           </div>
 
-          <div class="card card-clickable" style="padding: 16px; display: flex; justify-content: space-between; align-items: center;" onclick="alert('Language changed!'); store.set('lang', store.get('lang') === 'hi' ? 'en' : 'hi'); window.location.reload();">
+          <div class="card card-clickable" id="btn-lang-toggle" style="padding: 16px; display: flex; justify-content: space-between; align-items: center;">
             <div style="display: flex; align-items: center; gap: 12px;">
               <span style="font-size: 1.3rem;">🌐</span>
               <div>
@@ -87,6 +87,11 @@ export default {
 
       </div>
     `;
+
+    container.querySelector("#btn-lang-toggle").onclick = () => {
+      store.set("lang", store.get("lang") === "hi" ? "en" : "hi");
+      window.location.reload();
+    };
 
     container.querySelector("#btn-sos-emergency").onclick = () => {
       alert("🚨 NIRMAAN SOS TRIGGERED!\n\n1. Location sent to nearest PCR & 108 Ambulance.\n2. Nirmaan Worker Welfare Helpline notified (+91 1800-NIRMAAN).\n3. BOCW Emergency Medical Grant Claim initiated.");
