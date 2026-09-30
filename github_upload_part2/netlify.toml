@@ -1,0 +1,14 @@
+# Netlify deploy settings for the Nirmaan frontend (Vite)
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Vite 8 needs Node 20.19+ or 22.12+ (Netlify's default can be older)
+  NODE_VERSION = "22"
+
+# Safety net so any deep link still loads the app (app uses #/ hash routes)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
