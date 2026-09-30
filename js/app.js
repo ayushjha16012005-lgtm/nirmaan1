@@ -56,3 +56,20 @@ class App {
 
 // Start App
 new App();
+
+// Service Worker Registration for PWA / WebAPK installability
+if (
+  "serviceWorker" in navigator &&
+  (window.location.protocol === "https:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") &&
+  !window.Capacitor?.isNativePlatform?.()
+) {
+  window.addEventListener("load", () => {
+    try {
+      navigator.serviceWorker.register("/sw.js").catch((err) => {
+        console.warn("ServiceWorker registration skipped or failed:", err);
+      });
+    } catch (err) {
+      console.warn("ServiceWorker init error:", err);
+    }
+  });
+}
