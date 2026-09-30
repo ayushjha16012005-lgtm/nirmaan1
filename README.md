@@ -7,6 +7,10 @@
 
 A direct, fair marketplace that connects India's construction workers (*karigars*) with the people who need them — no middleman, full wages, transparent payments.
 
+<br />
+
+🚀 **Live Production App:** **[https://nirmaan-m.vercel.app/](https://nirmaan-m.vercel.app/)**
+
 </div>
 
 ---
@@ -179,6 +183,7 @@ The frontend runs on **http://localhost:5173** by default.
 ### Vercel Deployment
 
 The frontend SPA is deployed on [Vercel](https://vercel.com):
+- **Live Production URL**: [https://nirmaan-m.vercel.app/](https://nirmaan-m.vercel.app/)
 - **Root Directory**: `./` (repository root)
 - **Framework Preset**: `Vite`
 - **Build Command**: `npm run build`
@@ -189,7 +194,7 @@ The frontend SPA is deployed on [Vercel](https://vercel.com):
   - `VITE_SUPABASE_URL`
   - `VITE_SUPABASE_ANON_KEY`
 
-The old Netlify site (`netlify.toml`) now exclusively serves a 301 permanent redirect forwarding all traffic to the new Vercel production domain.
+The old Netlify site (`netlify.toml`) now exclusively serves a 301 permanent redirect forwarding all traffic to [https://nirmaan-m.vercel.app/](https://nirmaan-m.vercel.app/).
 
 ---
 
