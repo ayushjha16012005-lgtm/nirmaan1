@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Install Nirmaan App</title>
+  <meta name="description" content="Install the official Nirmaan app on your Android or iOS device in 10 seconds. Direct construction labour marketplace.">
+  
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#E8621A">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Nirmaan">
+
+  <style>
+    :root {
+      --saffron: #E8621A;
+      --saffron-dark: #C84F10;
+      --saffron-glow: rgba(232, 98, 26, 0.12);
+      --bg: #FFFFFF;
+      --bg-card: #FDFBF8;
+      --text: #18191B;
+      --text-muted: #5D636D;
+      --border: #E8E5DF;
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 48px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .logo-badge {
+      width: 100px;
+      height: 100px;
+      border-radius: 26px;
+      background: #FFFFFF;
+      box-shadow: 0 10px 30px rgba(232, 98, 26, 0.15), 0 2px 8px rgba(0, 0, 0, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .logo-badge svg {
+      width: 74px;
+      height: 74px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 1.05rem;
+      color: var(--saffron);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .lead {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 52px;
+      padding: 14px 20px;
+      border-radius: var(--radius);
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #FF7A30, var(--saffron));
+      color: #FFFFFF;
+      box-shadow: 0 6px 20px rgba(232, 98, 26, 0.35);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 10px rgba(232, 98, 26, 0.25);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-secondary:active {
+      background: #F0EDE6;
+    }
+
+    .card {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+    }
+
+    .steps-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--saffron-glow);
+      color: var(--saffron);
+      font-weight: 700;
+      font-size: 0.78rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .notice-box {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.92rem;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+    }
+
+    .notice-yellow {
+      background: #FFF9E6;
+      border: 1px solid #FFE28A;
+      color: #7A5300;
+    }
+
+    .notice-green {
+      background: #EBFBEE;
+      border: 1px solid #B7EB8F;
+      color: #135200;
+      text-align: center;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+      margin: 28px 0 20px;
+    }
+
+    .fallback-sec {
+      width: 100%;
+      text-align: center;
+    }
+
+    .fallback-sec h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .footer-links {
+      margin-top: 24px;
+      font-size: 0.95rem;
+    }
+
+    .footer-links a {
+      color: var(--saffron);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* Bottom Sheet Popup */
+    .sheet-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex;
+      align-items: flex-end;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .sheet-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .sheet-card {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      background: #FFFFFF;
+      border-radius: 24px 24px 0 0;
+      padding: 28px 24px 34px;
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      text-align: center;
+    }
+
+    .sheet-overlay.active .sheet-card {
+      transform: translateY(0);
+    }
+
+    .sheet-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 14px rgba(232, 98, 26, 0.12);
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sheet-icon svg {
+      width: 48px;
+      height: 48px;
+    }
+
+    .sheet-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .sheet-buttons .btn {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Nirmaan Logo -->
+    <div class="logo-badge" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+        <line x1="20" y1="105" x2="100" y2="38" stroke="#E8621A" stroke-width="16" stroke-linecap="round"/>
+        <polyline points="100,38 155,80 155,65 168,65 168,92 180,105" fill="none" stroke="#E8621A" stroke-width="16" stroke-linecap="round" stroke-linejoin="miter"/>
+        <line x1="55" y1="105" x2="55" y2="175" stroke="#E8621A" stroke-width="16" stroke-linecap="round"/>
+        <line x1="55" y1="105" x2="145" y2="175" stroke="#E8621A" stroke-width="16" stroke-linecap="round"/>
+        <line x1="145" y1="105" x2="145" y2="175" stroke="#E8621A" stroke-width="16" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <h1>Nirmaan</h1>
+    <div class="subtitle">Kaam Milega. Samman Milega.</div>
+    <p class="lead">Install the app on your phone. Takes 10 seconds.</p>
+
+    <!-- In-App Browser Warning (e.g. WhatsApp, Instagram, WebView) -->
+    <div id="inapp-notice" class="notice-box notice-yellow" style="display:none;">
+      <strong>⚠️ Open in Chrome to Install</strong>
+      <span>In-app browsers do not support 1-tap app install. Tap below to launch Chrome:</span>
+      <a id="btn-open-chrome" class="btn btn-secondary" style="margin-top:6px; min-height:44px; font-size:0.95rem;">
+        🌐 Open in Chrome
+      </a>
+    </div>
+
+    <!-- Installed Success Notice -->
+    <div id="installed-notice" class="notice-box notice-green" style="display:none;">
+      <strong>✅ Nirmaan is installed!</strong>
+      <span>Open it anytime from your home screen or app drawer.</span>
+      <a href="/#/" class="btn btn-primary" style="margin-top:10px;">Open Nirmaan</a>
+    </div>
+
+    <!-- Primary 1-Tap Install Button -->
+    <button id="btn-install" class="btn btn-primary" style="display:none;" aria-label="Install Nirmaan app">
+      📲 Install Nirmaan
+    </button>
+
+    <!-- Standalone launcher button (if already installed) -->
+    <a id="btn-open-app" href="/#/" class="btn btn-primary" style="display:none;">
+      🚀 Open Nirmaan App
+    </a>
+
+    <!-- Manual Steps Card for Android -->
+    <div id="manual-steps-android" class="card" style="display:none;">
+      <div class="card-title">📱 How to Install Manually</div>
+      <ul class="steps-list">
+        <li>
+          <span class="step-num">1</span>
+          <span>Tap the browser menu (three dots <strong>⋮</strong> in top-right of Chrome).</span>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <span>Tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</span>
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <span>Confirm <strong>"Install"</strong>. The icon will appear on your phone.</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- iOS Instructions Card -->
+    <div id="ios-steps" class="card" style="display:none;">
+      <div class="card-title">🍎 Install on iPhone / iPad</div>
+      <ul class="steps-list">
+        <li>
+          <span class="step-num">1</span>
+          <span>Tap the <strong>Share</strong> button (box with arrow <span style="font-size:1.1rem;">⎋</span>) in Safari.</span>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <span>Scroll down and tap <strong>"Add to Home Screen"</strong> (➕).</span>
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <span>Tap <strong>Add</strong> at the top right.</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Fallback Direct APK Download Section -->
+    <div class="fallback-sec">
+      <h2>Phone can't install?</h2>
+      <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:14px;">
+        Download the standalone Android app (APK):
+      </p>
+      <a id="btn-apk-download" href="https://github.com/ayushjha16012005-lgtm/nirmaan1/releases/latest/download/Nirmaan.apk" class="btn btn-secondary">
+        ⬇️ Download Android APK
+      </a>
+      <div style="font-size:0.82rem; color:var(--text-muted); margin-top:12px; line-height:1.6; text-align:left; background:var(--bg-card); padding:12px 14px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+        <strong>APK Install Steps:</strong><br>
+        1) Download the file.<br>
+        2) Open the file and allow <em>"Install unknown apps"</em> if prompted.<br>
+        3) Tap <strong>Install</strong>.<br>
+        <em>Note: If you previously installed an older APK, uninstall it first.</em>
+      </div>
+    </div>
+
+    <div class="footer-links">
+      <a href="/#/">🌐 Open web version instead</a>
+    </div>
+  </div>
+
+  <!-- Bottom Sheet Install Prompt Card -->
+  <div id="sheet-overlay" class="sheet-overlay" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <div class="sheet-card">
+      <div class="sheet-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+          <line x1="20" y1="105" x2="100" y2="38" stroke="#E8621A" stroke-width="16" stroke-linecap="round"/>
+          <polyline points="100,38 155,80 155,65 168,65 168,92 180,105" fill="none" stroke="#E8621A" stroke-width="16" stroke-linecap="round" stroke-linejoin="miter"/>
+          <line x1="55" y1="105" x2="55" y2="175" stroke="#E8621A" stroke-width="16" stroke-linecap="round"/>
+          <line x1="55" y1="105" x2="145" y2="175" stroke="#E8621A" stroke-width="16" stroke-linecap="round"/>
+          <line x1="145" y1="105" x2="145" y2="175" stroke="#E8621A" stroke-width="16" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 id="sheet-title" style="font-size:1.35rem; font-weight:800; margin-bottom:6px;">Install Nirmaan</h2>
+      <p style="font-size:0.92rem; color:var(--text-muted);">Get the full app experience on your home screen with fast offline access.</p>
+      <div class="sheet-buttons">
+        <button id="btn-sheet-cancel" class="btn btn-secondary">Not now</button>
+        <button id="btn-sheet-install" class="btn btn-primary">Install</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Service Worker Registration for standalone installability
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js").catch(() => {});
+      });
+    }
+
+    const ua = navigator.userAgent || "";
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+    const isInApp = /FBAN|FBAV|Instagram|Line|WhatsApp|GSA|GoogleApp|wv/i.test(ua);
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+
+    const btnInstall = document.getElementById("btn-install");
+    const btnOpenApp = document.getElementById("btn-open-app");
+    const sheetOverlay = document.getElementById("sheet-overlay");
+    const btnSheetInstall = document.getElementById("btn-sheet-install");
+    const btnSheetCancel = document.getElementById("btn-sheet-cancel");
+    const manualAndroid = document.getElementById("manual-steps-android");
+    const iosSteps = document.getElementById("ios-steps");
+    const inappNotice = document.getElementById("inapp-notice");
+    const installedNotice = document.getElementById("installed-notice");
+    const btnOpenChrome = document.getElementById("btn-open-chrome");
+
+    let deferredPrompt = null;
+
+    // In-App browser check
+    if (isInApp) {
+      inappNotice.style.display = "flex";
+      const currentHost = window.location.host;
+      btnOpenChrome.href = `intent://${currentHost}/install/#Intent;scheme=https;package=com.android.chrome;end`;
+    }
+
+    // Already installed check
+    if (isStandalone) {
+      btnOpenApp.style.display = "inline-flex";
+    } else if (isIOS) {
+      iosSteps.style.display = "block";
+    }
+
+    // PWA beforeinstallprompt handler
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+
+      if (!isStandalone) {
+        btnInstall.style.display = "inline-flex";
+        // Show bottom sheet
+        sheetOverlay.classList.add("active");
+      }
+    });
+
+    async function triggerInstall() {
+      if (!deferredPrompt) return;
+      sheetOverlay.classList.remove("active");
+      deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
+      if (choice && choice.outcome === "accepted") {
+        showInstalledState();
+      }
+      deferredPrompt = null;
+    }
+
+    btnInstall.addEventListener("click", triggerInstall);
+    btnSheetInstall.addEventListener("click", triggerInstall);
+    btnSheetCancel.addEventListener("click", () => {
+      sheetOverlay.classList.remove("active");
+      manualAndroid.style.display = "block";
+    });
+
+    // Fallback: If beforeinstallprompt has not fired after 2 seconds on Android/Chrome
+    setTimeout(() => {
+      if (!deferredPrompt && !isStandalone && !isIOS) {
+        manualAndroid.style.display = "block";
+      }
+    }, 2000);
+
+    // App installed event
+    window.addEventListener("appinstalled", () => {
+      showInstalledState();
+    });
+
+    function showInstalledState() {
+      sheetOverlay.classList.remove("active");
+      btnInstall.style.display = "none";
+      if (manualAndroid) manualAndroid.style.display = "none";
+      installedNotice.style.display = "block";
+    }
+  </script>
+</body>
+</html>

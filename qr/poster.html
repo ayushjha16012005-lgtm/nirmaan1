@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nirmaan App - Scan to Install Poster</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 12mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      background: #FFFFFF;
+      color: #18191B;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .poster {
+      width: 100%;
+      max-width: 680px;
+      min-height: 940px;
+      border: 3px solid #E8621A;
+      border-radius: 24px;
+      padding: 36px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      position: relative;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .header-logo svg {
+      width: 48px;
+      height: 48px;
+    }
+
+    .brand-name {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #18191B;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-tagline {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #E8621A;
+      margin-bottom: 18px;
+    }
+
+    .main-callout {
+      background: #FFF5EE;
+      border: 2px dashed #E8621A;
+      border-radius: 16px;
+      padding: 12px 28px;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #18191B;
+      margin-bottom: 22px;
+    }
+
+    .qr-container {
+      width: 280px;
+      height: 280px;
+      padding: 12px;
+      background: #FFFFFF;
+      border-radius: 20px;
+      border: 2px solid #E8E5DF;
+      box-shadow: 0 8px 30px rgba(232, 98, 26, 0.15);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-container img {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .qr-url {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #5D636D;
+      letter-spacing: 0.2px;
+      margin-bottom: 24px;
+      word-break: break-all;
+    }
+
+    .instructions-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .instruction-card {
+      background: #FDFBF8;
+      border: 1px solid #E8E5DF;
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+
+    .card-heading {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #E8621A;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+
+    .steps-list li {
+      display: flex;
+      gap: 8px;
+    }
+
+    .num-bullet {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #E8621A;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 0.72rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .fallback-note {
+      width: 100%;
+      background: #FFF9E6;
+      border: 1px solid #FFE28A;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      color: #7A5300;
+      text-align: left;
+      line-height: 1.4;
+    }
+
+    .footer {
+      margin-top: 16px;
+      font-size: 0.82rem;
+      color: #8C929D;
+      font-weight: 600;
+    }
+
+    @media print {
+      body {
+        padding: 0;
+      }
+      .poster {
+        border-color: #E8621A;
+        box-shadow: none;
+        width: 100%;
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="poster">
+    <div class="header-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+        <line x1="20" y1="105" x2="100" y2="38" stroke="#E8621A" stroke-width="16" stroke-linecap="round"/>
+        <polyline points="100,38 155,80 155,65 168,65 168,92 180,105" fill="none" stroke="#E8621A" stroke-width="16" stroke-linecap="round" stroke-linejoin="miter"/>
+        <line x1="55" y1="105" x2="55" y2="175" stroke="#E8621A" stroke-width="16" stroke-linecap="round"/>
+        <line x1="55" y1="105" x2="145" y2="175" stroke="#E8621A" stroke-width="16" stroke-linecap="round"/>
+        <line x1="145" y1="105" x2="145" y2="175" stroke="#E8621A" stroke-width="16" stroke-linecap="round"/>
+      </svg>
+      <div class="brand-name">NIRMAAN</div>
+    </div>
+    <div class="brand-tagline">Kaam Milega. Samman Milega. • निर्माण</div>
+
+    <div class="main-callout">
+      📲 Scan to install Nirmaan on your phone
+    </div>
+
+    <div class="qr-container">
+      <img src="nirmaan-install-qr.png" alt="Scan to install Nirmaan">
+    </div>
+
+    <div class="qr-url">https://nirmaan-m.vercel.app/install/</div>
+
+    <div class="instructions-grid">
+      <!-- Android Instructions -->
+      <div class="instruction-card">
+        <div class="card-heading">🤖 Android (Chrome)</div>
+        <ul class="steps-list">
+          <li>
+            <span class="num-bullet">1</span>
+            <span>Open phone <strong>Camera</strong>, scan the QR, and tap the link.</span>
+          </li>
+          <li>
+            <span class="num-bullet">2</span>
+            <span>Tap <strong>"Install"</strong> on the Nirmaan popup, then confirm.</span>
+          </li>
+          <li>
+            <span class="num-bullet">3</span>
+            <span>Open <strong>Nirmaan</strong> directly from your home screen.</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- iOS Instructions -->
+      <div class="instruction-card">
+        <div class="card-heading">🍎 iPhone / iPad (Safari)</div>
+        <ul class="steps-list">
+          <li>
+            <span class="num-bullet">1</span>
+            <span>Scan the QR code and open the link in <strong>Safari</strong>.</span>
+          </li>
+          <li>
+            <span class="num-bullet">2</span>
+            <span>Tap the <strong>Share</strong> button (box with arrow <span style="font-size:0.95rem;">⎋</span>).</span>
+          </li>
+          <li>
+            <span class="num-bullet">3</span>
+            <span>Tap <strong>"Add to Home Screen"</strong> (➕) and tap <strong>Add</strong>.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Troubleshooting Fallback -->
+    <div class="fallback-note">
+      <strong>⚠️ No install popup?</strong> Tap the Chrome menu (<strong>⋮</strong>) → <strong>"Install app"</strong>.<br>
+      <strong>Or Download APK:</strong> Tap <em>"Download Android APK"</em> on the page, allow <em>"Install unknown apps"</em> once, and tap Install.
+    </div>
+
+    <div class="footer">
+      Nirmaan — India's Direct & Fair Construction Labour Platform
+    </div>
+  </div>
+
+</body>
+</html>
