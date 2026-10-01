@@ -1,0 +1,41 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    name: Lint, Test & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Syntax & Lint Check
+        run: |
+          node --check js/app.js
+          node --check core/router.js
+          node --check core/store.js
+          node --check core/ui.js
+          node --check services/api.js
+          node --check services/pms.js
+          node --check services/demo-responder.js
+
+      - name: Run Unit & Smoke Tests
+        run: npm test
+
+      - name: Build Production Assets
+        run: npm run build

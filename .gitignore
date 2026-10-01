@@ -8,11 +8,19 @@ build/
 .cache/
 .vercel/
 
-# Environment variables
+# Environment variables & Secrets (CRITICAL)
 .env
 .env.*
 .env.local
 .env.*.local
+*.pem
+*.key
+*.cert
+*.p12
+
+# Supabase
+supabase/.temp
+.supabase/
 
 # Android & Keystores
 *.jks

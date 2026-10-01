@@ -1,301 +1,222 @@
 <div align="center">
 
-# 🏗️ NIRMAAN
-
+# 🏗️ NIRMAAN (निर्माण)
 ### *Kaam Milega. Samman Milega.*
 **Bharat ka Nirmaan, Nahi Rukega.**
 
-A direct, fair marketplace that connects India's construction workers (*karigars*) with the people who need them — no middleman, full wages, transparent payments.
+A direct, fair marketplace connecting India's construction workers (*Kaarigars*) directly with households and builders — zero thekedar commission, verified trust scores, live GPS dispatch, digital escrow, photo proofs, and offline-first project management.
 
 <br />
 
-🚀 **Live Production App:** **[https://nirmaan-m.vercel.app/](https://nirmaan-m.vercel.app/)**
+[![CI Pipeline](https://github.com/ayushjha/nirmaan1/actions/workflows/ci.yml/badge.svg)](https://github.com/ayushjha/nirmaan1/actions/workflows/ci.yml)
+[![Live Production App](https://img.shields.io/badge/Production-Live%20App-E8621A?style=flat&logo=vercel)](https://nirmaan-m.vercel.app/)
 
 </div>
 
 ---
 
-## 📖 About
+## 🏛️ System Architecture
 
-Nirmaan is a construction-labour marketplace for India. Masons (*rajmistri*), electricians, plumbers, painters, tile-fitters and other skilled workers can find nearby jobs, while households and builders can hire verified karigars directly — without a *thekedar* taking a cut.
+```mermaid
+graph TD
+    Client["📱 Client PWA / SPA (Vanilla JS + Vite)"] --> Auth["🔐 Supabase Auth (SMS OTP)"]
+    Client --> DB["🗄️ Supabase PostgreSQL (RLS Enforced)"]
+    Client --> Storage["📦 Supabase Storage (proofs, avatars, project-photos)"]
+    Client --> Realtime["⚡ Supabase Realtime (job-loc GPS, messages, notifs)"]
+    Client --> Edge["☁️ Supabase Edge Functions (Deno / TypeScript)"]
 
-> *Logon se banta hai Bharat. Har Nirmaan mein ek behtar kal.*
+    Edge --> Razorpay["💳 Razorpay Escrow API (Manual Capture)"]
+    Edge --> DemoResp["🤖 Demo Responder (Seed Worker Simulation)"]
 
-### Why Nirmaan
-
-- **Full wages for workers** — direct hiring, no middleman commission.
-- **Savings for builders** — up to ~20% lower cost than the traditional contractor route.
-- **Trust built in** — verified karigars, ratings & reviews, and escrow payments.
-- **Built for Bharat** — multilingual (English / Hindi), voice-first, simple UI.
-
----
-
-## ✨ Features
-
-| Feature | Description |
-|---|---|
-| ✅ **Verified Karigars** | Document-based verification of worker profiles |
-| 🗺️ **Map-based Discovery** | Find karigars near you (distance, rating and service filters) using Leaflet maps |
-| 📍 **Live Tracking** | Follow a karigar's journey — *Accepted → On the way → Arriving → Completed* |
-| 💸 **Secure Payments (Escrow)** | Money is held safely and released on job completion |
-| 💬 **In-app Support & Messages** | Chat between clients and workers |
-| ⭐ **Ratings & Reviews** | Build reputation on both sides |
-| 🛠️ **Wide Range of Services** | Mason, Electrician, Plumber, Painter, Tiles and more |
-| 🎙️ **AI Saarthi** | Voice and text AI assistant (Gemini-powered) that can search workers, post jobs and manage bookings via tool-calling |
-| 🏛️ **Govt. Schemes & Benefits** | Information on schemes relevant to construction workers |
-| 🌐 **Multilingual & Theming** | i18n (EN/HI), light/dark themes |
-| 🛡️ **Admin Panel** | Verification, moderation and audit logs |
-
----
-
-## 📱 App Screens
-
-| Karigar Splash | Karigar Home | User Home (Map) | Live Tracking |
-|:---:|:---:|:---:|:---:|
-| *Mehnat ka Samman. Har Din Nirmaan.* | *Zyada Kaam. Zyada Samman.* | *Sahi Log. Sahi Kaam. Sahi Jagah.* | *Bharosa Har Kadam Par.* |
-
-> Add the design mockup at `docs/mockups.jpg` and reference it here:
-> `![Nirmaan Screens](docs/mockups.jpg)`
-
----
-
-## 🧰 Tech Stack
-
-**Frontend**
-- Vanilla JavaScript (ES modules) with a custom router, store, and component system
-- [Vite](https://vitejs.dev/) — dev server & bundler
-- [Leaflet](https://leafletjs.com/) — maps
-- [Supabase JS](https://supabase.com/docs/reference/javascript) — auth & data
-- [vanilla-tilt](https://micku7zu.github.io/vanilla-tilt.js/) — UI effects
-
-**Backend** (`/backend`)
-- Node.js + [Express](https://expressjs.com/) + TypeScript
-- [Prisma ORM](https://www.prisma.io/) with PostgreSQL
-- JWT authentication, role-based permissions (`WORKER`, `CLIENT`, `ADMIN`)
-- [Zod](https://zod.dev/) validation, Helmet, CORS, Morgan, rate limiting
-- Google Gemini AI provider with a policy-guarded **tool layer** (workers, jobs, bookings, reviews, location, admin)
-- [Vitest](https://vitest.dev/) + Supertest for testing
-
----
-
-## 📁 Project Structure
-
-```
-Nirmaan/
-├── index.html            # App entry point
-├── package.json          # Frontend dependencies & scripts
-├── core/                 # Router, store, i18n, theme, UI helpers, observer
-├── components/           # Header, footer, bottom-nav, map, karigar-card
-├── pages/                # Screens: splash, auth, onboarding, user-home,
-│                         #   kaarigar-home, hire, track, projects, admin, ...
-├── services/             # API, Supabase, escrow, tracking, voice clients
-├── css/                  # styles, themes, animations
-├── data/                 # constants & mock data
-├── js/                   # Landing/dashboard pages, chatbot, dynamic pricing
-│
-└── backend/
-    ├── prisma/           # schema.prisma & seed.ts
-    ├── src/
-    │   ├── api/routes/   # auth, workers, jobs, bookings, reviews,
-    │   │                 #   location, notifications, admin, ai, tools, health
-    │   ├── services/     # Business logic
-    │   ├── repositories/ # Data access layer
-    │   ├── auth/         # JWT, roles, permissions
-    │   ├── middleware/   # auth, error-handler, rate-limit, request-id
-    │   ├── ai/           # Gemini provider & assistant
-    │   ├── tools/        # AI tool registry, manager & policy
-    │   ├── voice/        # Voice & language handling
-    │   └── config/       # Environment config
-    └── tests/            # Security, concurrency, e2e & multilingual tests
+    subgraph Database Security
+        DB --- RLS["Row Level Security (100% Policy Coverage)"]
+        DB --- Audit["Immutable Audit Trail (job_events)"]
+        DB --- RPCs["Security Definer RPCs (advance_job, verify_job_otp)"]
+    end
 ```
 
 ---
 
-## 🚀 Getting Started
+## ⚡ 5-Minute Supabase Setup
 
-### Prerequisites
+Nirmaan runs on a standard Supabase project. You can plug in your own Supabase instance in under 5 minutes:
 
-- **Node.js** 18+ and npm
-- **PostgreSQL** database
-- A **Supabase** project (URL + anon key)
-- *(Optional)* Gemini API key and a Maps API key for AI and geocoding
+### 1. Create a Supabase Project
+1. Go to [database.new](https://database.new) and create a new project.
+2. In **Authentication → Providers → Phone**, enable Phone authentication.
+   - For production: Configure Twilio or MessageBird SMS provider.
+   - For testing/evaluation: Add a Test Phone Number (e.g. `+919876543210` with OTP `123456`) under **Authentication → Providers → Phone → Test Phone Numbers**.
 
-### 1. Clone & install
+### 2. Run Database Migrations in SQL Editor
+Open your Supabase **SQL Editor** and run the migration files in strict sequential order:
 
+| Step | Migration File | Purpose |
+|---|---|---|
+| 1️⃣ | `supabase/migrations/001_schema.sql` | Core schema (`profiles`, `worker_profiles`, `jobs`, `job_events`, `job_proofs`, `payments`, `reviews`, `messages`, `notifications`, `materials`, `projects`) |
+| 2️⃣ | `supabase/migrations/002_rls.sql` | Row Level Security (RLS) policies on every table with `is_admin()` helper |
+| 3️⃣ | `supabase/migrations/003_functions.sql` | Security definer RPCs (`nearby_workers`, `create_job`, `advance_job`, `verify_job_otp`, `submit_review`, triggers) |
+| 4️⃣ | `supabase/migrations/004_storage.sql` | Storage buckets (`proofs`, `avatars`, `project-photos`) and storage RLS |
+| 5️⃣ | `supabase/migrations/005_seed.sql` | 300 realistic NCR verified worker profiles with `is_seed = true` |
+| 6️⃣ | `supabase/migrations/006_demo_responder.sql` | Automated seed worker advancement RPC (`demo_advance_job`) and settings |
+
+### 3. Deploy Edge Functions (Optional for Razorpay / Automated Responder)
+Install the Supabase CLI and link your project:
 ```bash
-git clone <your-repo-url>
-cd Nirmaan
-cd nirmaan2
-npm install
-cd backend && npm install
+npx supabase login
+npx supabase link --project-ref <your-project-ref>
+
+# Set Edge Function secrets
+npx supabase secrets set RAZORPAY_KEY_ID=rzp_test_... RAZORPAY_KEY_SECRET=...
+
+# Deploy all Edge Functions
+npx supabase functions deploy create-order
+npx supabase functions deploy capture-payment
+npx supabase functions deploy refund-payment
+npx supabase functions deploy razorpay-webhook
+npx supabase functions deploy demo-responder
 ```
 
-### 2. Configure environment variables
+*(Note: If Razorpay keys are not configured, Nirmaan automatically falls back to an authenticated database test ledger, preserving 100% of the UI flow seamlessly!)*
 
-**Frontend** — create `.env` in the project root:
-
+### 4. Configure Client Environment
+Create a `.env` file in the project root:
 ```env
-VITE_SUPABASE_URL=your-supabase-url
-VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+VITE_SUPABASE_URL=https://<your-project-ref>.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+VITE_RAZORPAY_KEY_ID=rzp_test_optional
+VITE_DEMO_HELP=true
 ```
 
-**Backend** — copy `backend/.env.example` to `backend/.env` and fill in:
+---
 
-```env
-PORT=4000
-NODE_ENV=development
-CLIENT_URL=http://localhost:5173
+## 🧪 Test Phone Numbers & Evaluator Guide
 
-DATABASE_URL=postgresql://user:password@localhost:5432/nirmaan
+For testing without incurring SMS charges, configure Supabase Test Phone Numbers:
 
-JWT_SECRET=your-jwt-secret
-SUPABASE_URL=
-SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
+| Role | Test Phone Number | Default OTP | Notes |
+|---|---|---|---|
+| **Customer / Builder** | `+91 98765 43210` | `123456` | Logs directly into Customer view |
+| **Kaarigar / Worker** | `+91 98111 22233` | `123456` | Logs directly into Kaarigar partner view |
+| **Platform Admin** | Any verified user with `is_admin = true` | `123456` | Accesses `#/admin` verification queue |
 
-GEMINI_API_KEY=
-MAPS_API_KEY=
+To grant Admin access to an account, run in Supabase SQL Editor:
+```sql
+update public.profiles set is_admin = true where phone = '+919876543210';
 ```
 
-> ⚠️ Never commit `.env` files or share your keys publicly.
+---
 
-### 3. Set up the database
+## 🤖 Demo Responder (Seed Worker Simulation)
 
-```bash
-cd backend
-npm run prisma:generate
-npm run prisma:migrate
-npm run prisma:seed        # optional sample data
-```
+When hiring any of the 300 seed workers (`is_seed = true`), the **Demo Responder** automatically drives the job forward on a realistic timeline so evaluators never hit a dead end:
+- **4 seconds**: Kaarigar accepts booking (`requested` → `accepted`).
+- **12 seconds**: Kaarigar departs (`accepted` → `on_the_way`), live GPS movements broadcast every 3s over Realtime with dynamic ETA.
+- **30 seconds**: Kaarigar arrives on site (`on_the_way` → `arrived`).
+- **On-Spot Handshake**: Customer shares 4-digit PIN (or clicks *⚡ Simulate Kaarigar Entering PIN*) → `in_progress`.
+- **45 seconds**: Sample completion photo uploaded with SHA-256 hash → `work_submitted`.
+- **Settlement**: Customer inspects photo and clicks *Approve Work & Release Payment* → `settled` + printable receipt.
 
-### 4. Run the app
-
-```bash
-# Backend (from /backend)
-npm run dev
-
-# Frontend (from project root, in a new terminal)
-npm run dev
-```
-
-The frontend runs on **http://localhost:5173** by default.
-
-### Vercel Deployment
-
-The frontend SPA is deployed on [Vercel](https://vercel.com):
-- **Live Production URL**: [https://nirmaan-m.vercel.app/](https://nirmaan-m.vercel.app/)
-- **Root Directory**: `./` (repository root)
-- **Framework Preset**: `Vite`
-- **Build Command**: `npm run build`
-- **Output Directory**: `dist`
-- **Install Command**: `npm ci`
-- **Node.js Version**: `22` (configured in `.nvmrc` and `engines`)
-- **Environment Variables**:
-  - `VITE_SUPABASE_URL`
-  - `VITE_SUPABASE_ANON_KEY`
-
-The old Netlify site (`netlify.toml`) now exclusively serves a 301 permanent redirect forwarding all traffic to [https://nirmaan-m.vercel.app/](https://nirmaan-m.vercel.app/).
+### Where to Toggle `demo_responder`:
+- **In Supabase SQL**:
+  ```sql
+  update public.app_settings set value = 'false' where key = 'demo_responder';
+  ```
+- **In Browser Console**:
+  ```javascript
+  localStorage.setItem('nirmaan_demo_responder', 'false');
+  ```
+- For full details, see [docs/DEMO.md](docs/DEMO.md).
 
 ---
 
 ## 📜 Available Scripts
 
-**Frontend (root)**
-
 | Command | Description |
 |---|---|
-| `npm run dev` | Start Vite dev server |
-| `npm run build` | Production build to `dist/` |
-| `npm run preview` | Preview the production build |
-
-**Backend (`/backend`)**
-
-| Command | Description |
-|---|---|
-| `npm run dev` | Start API with hot reload (tsx) |
-| `npm run build` | Compile TypeScript |
-| `npm start` | Run compiled server |
-| `npm test` | Run test suite |
-| `npm run test:watch` | Tests in watch mode |
-| `npm run prisma:generate` | Generate Prisma client |
-| `npm run prisma:migrate` | Run DB migrations |
-| `npm run prisma:seed` | Seed the database |
+| `npm run dev` | Start Vite development server (`http://localhost:5173`) |
+| `npm test` | Run all 18 unit tests and the 17-step end-to-end smoke test runner |
+| `npm run build` | Build production bundle in `dist/` |
+| `npm run preview` | Preview production build locally |
+| `node scripts/smoke.mjs` | Run standalone end-to-end smoke test script |
 
 ---
 
-## 🔌 API Overview
+## 📁 Repository Structure
 
-Base URL: `/api/v1`
-
-| Route | Purpose |
-|---|---|
-| `/auth` | Sign-up, login, session |
-| `/workers` | Worker profiles, documents, availability |
-| `/jobs` | Post, browse, apply to jobs |
-| `/bookings` | Booking lifecycle |
-| `/reviews` | Ratings & reviews |
-| `/location` | Geocoding & nearby search |
-| `/notifications` | User notifications |
-| `/ai` | AI Saarthi assistant |
-| `/tools` | Policy-guarded AI tool execution |
-| `/admin` | Verification, moderation, audit |
-| `/health` | Health check |
-
-**Booking lifecycle:** `REQUESTED → ACCEPTED → CONFIRMED → WORKER_ON_WAY → ARRIVED → IN_PROGRESS → COMPLETED` (or `REJECTED` / cancelled)
-
-**Job lifecycle:** `OPEN → ASSIGNED → IN_PROGRESS → COMPLETED` (or `CANCELLED` / `DISPUTED`)
-
----
-
-## 🧪 Testing
-
-```bash
-cd backend
-npm test
+```
+nirmaan1/
+├── index.html                   # Master HTML entry point
+├── js/app.js                    # Application bootstrapper
+├── core/
+│   ├── router.js                # Hash router with route guards (auth, onboarding, admin, 404)
+│   ├── store.js                 # Reactive state store with Supabase auth sync
+│   ├── ui.js                    # UI utilities (toast, escape, currency, date, skeletons, error banner)
+│   ├── i18n.js                  # English & Hindi translation engine
+│   └── theme.js                 # Light & dark theme manager
+├── components/
+│   ├── header.js                # Dual-role switcher, notification bell & modal
+│   ├── bottom-nav.js            # Mobile bottom navigation bar
+│   ├── map.js                   # Leaflet map wrapper with routing & worker pins
+│   ├── kaarigar-card.js         # Kaarigar profile card component
+│   ├── proof-capture.js         # Camera capture, client downscale, SHA-256 hash & signed URLs
+│   └── chat-modal.js            # Realtime in-app customer-worker chat
+├── pages/
+│   ├── splash.js                # Role selector & entry splash
+│   ├── auth.js                  # Real 6-digit SMS OTP authentication
+│   ├── onboarding.js            # KYC profile setup (Aadhaar number excluded, selfie camera)
+│   ├── user-home.js             # Map-first discovery with trade & radius filters
+│   ├── kaarigar-detail.js       # Worker profile, verified badges, reviews, gallery
+│   ├── hire.js                  # Job creation form with digital affidavit
+│   ├── track.js                 # 11-stage live tracking, PIN handshake, proof review, escrow
+│   ├── projects.js              # Offline-first PMS with material delivery & site photos
+│   ├── user-profile.js          # Customer profile, bookings list, data deletion
+│   ├── kaarigar-home.js         # Rapido-style job alerts, real earnings, welfare schemes
+│   ├── kaarigar-profile.js      # Worker profile editor, skills, trade settings
+│   ├── kaarigar-ai.js           # Multilingual voice AI assistant (Saarthi / Disha)
+│   ├── admin.js                 # Verification queue, audit logs, platform metrics
+│   ├── legal.js                 # Privacy policy & Terms of service
+│   └── not-found.js             # 404 fallback page
+├── services/
+│   ├── supabase.js              # Supabase client singleton & isLive() helper
+│   ├── api.js                   # Comprehensive API service with database RPCs
+│   ├── escrow.js                # Razorpay checkout & database test ledger
+│   ├── tracking.js              # Geolocation watchPosition & Realtime GPS broadcaster
+│   ├── realtime.js              # Realtime subscriptions for jobs, messages, notifications
+│   ├── pms.js                   # Offline-first project management service & sync queue
+│   └── demo-responder.js        # Seed worker timeline & GPS simulator
+├── supabase/
+│   ├── migrations/              # Database migrations (001_schema.sql to 006_demo_responder.sql)
+│   └── functions/               # Supabase Edge Functions (Deno / TypeScript)
+│       ├── create-order/        # Razorpay manual capture order creation
+│       ├── razorpay-webhook/    # Webhook signature verification
+│       ├── capture-payment/     # Escrow release upon customer sign-off
+│       ├── refund-payment/      # Payment refund on job cancellation
+│       └── demo-responder/      # Automated seed worker progression
+├── tests/                       # Unit tests (validation, distance, state-machine, formatting, RLS)
+├── scripts/
+│   ├── smoke.mjs                # End-to-end smoke test script
+│   └── make-seed-sql.mjs        # Seed generator for 300 NCR workers
+└── docs/
+    ├── DB.md                    # Database ER diagram & schema documentation
+    ├── PAYMENTS.md              # Escrow sequence diagram & lifecycle
+    └── DEMO.md                  # Demo responder & evaluator guide
 ```
 
-The suite covers authentication & authorization security, AI/tool policy security, storage security, booking concurrency, HTTP integration, end-to-end user journeys, and multilingual behaviour.
-
 ---
 
-## 🔐 Security Notes
+## 🔐 Security & Privacy Commitments
 
-- JWT-based auth with role-based access control
-- Helmet, CORS and rate limiting enabled
-- Input validation via Zod
-- AI tool calls pass through a permission policy layer
-- Audit logging for sensitive actions
-- Keep `.env` out of version control (already in `.gitignore`)
-
----
-
-## 🗺️ Roadmap
-
-- [ ] Native mobile apps (Android / iOS)
-- [ ] Payments gateway integration for escrow
-- [ ] More regional languages
-- [ ] Govt. scheme eligibility checker
-- [ ] Offline-friendly mode for low-connectivity areas
-
----
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a branch: `git checkout -b feature/your-feature`
-3. Commit your changes: `git commit -m "Add your feature"`
-4. Push and open a Pull Request
-
----
-
-## 📄 License
-
-ISC © Nirmaan India
+1. **Aadhaar Privacy**: In strict compliance with UIDAI regulations, Nirmaan **never collects or stores raw 12-digit Aadhaar numbers**. Verification is performed via document upload and video selfie KYC.
+2. **Phone Number Masking**: Customer and worker contact numbers are masked across public endpoints (`+91 98•••• ••27`).
+3. **Database RLS**: Every database table enforces Row Level Security. Data is inaccessible without authenticated user tokens matching column foreign keys.
+4. **Photo Integrity**: Work completion proof photos are downscaled on the client, hashed with SHA-256 before upload, and stored in private buckets accessible only via short-lived signed URLs.
 
 ---
 
 <div align="center">
 
 *Milkar Banayenge Behtar Bharat.* 🇮🇳
+
+ISC © Nirmaan India
 
 </div>
