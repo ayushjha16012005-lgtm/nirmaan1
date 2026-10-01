@@ -25,6 +25,7 @@ supabase/.temp
 # Android & Keystores
 *.jks
 *.keystore
+*.apk
 android/app/build/
 android/.gradle/
 local.properties
