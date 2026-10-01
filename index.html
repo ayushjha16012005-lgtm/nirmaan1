@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   
   <!-- SEO Meta Tags -->
   <title>Nirmaan — India's Direct & Fair Construction Labour Platform</title>
@@ -43,30 +43,8 @@
   <!-- App Logic (Module Router) -->
   <script type="module" src="js/app.js"></script>
 
-  <!-- Floating AI Voice Assistant Button -->
-  <a href="#/voice-assistant" id="ai-fab" style="
-    position:fixed; bottom:30px; right:30px; z-index:9999;
-    width:64px; height:64px; border-radius:50%;
-    background:linear-gradient(135deg, #ff8a50, var(--saffron));
-    color:white; font-size:1.6rem; text-decoration:none;
-    box-shadow:0 6px 20px rgba(232,98,26,0.45);
-    display:flex; align-items:center; justify-content:center;
-    transition:transform 0.2s ease;
-    animation: nirmaan-fab-glow 2s ease-in-out infinite;
-  " title="AI Voice Assistant (Saarthi / Disha)">🎙️</a>
-
-  <style>
-    @keyframes nirmaan-fab-glow {
-      0%, 100% { box-shadow: 0 6px 20px rgba(232,98,26,0.45); }
-      50% { box-shadow: 0 6px 30px rgba(232,98,26,0.7); }
-    }
-    #ai-fab:hover { transform: scale(1.1); }
-    @keyframes nirmaan-pulse {
-      0% { box-shadow: 0 0 0 0 rgba(255,87,34,0.6); }
-      70% { box-shadow: 0 0 0 30px rgba(255,87,34,0); }
-      100% { box-shadow: 0 0 0 0 rgba(255,87,34,0); }
-    }
-  </style>
+  <!-- Floating AI Voice Assistant Button (Desktop Only) -->
+  <a href="#/kaarigar-ai" id="ai-fab" title="AI Voice Assistant (Saarthi / Disha)" aria-label="AI Voice Assistant">🎙️</a>
 
 </body>
 </html>

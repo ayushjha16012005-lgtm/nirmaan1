@@ -77,6 +77,18 @@ const translations = {
     "track.escrowLocked": "Escrow Payment Locked",
     "track.releaseCash": "Release Payment",
 
+    // Profile & Switching
+    "profile.switchToKaarigar": "Switch to Kaarigar Account",
+    "profile.switchToUser": "Switch to Customer Account",
+    "profile.logout": "Log Out",
+    "switcher.title": "Switch Account",
+    "switcher.customerRole": "Customer / Builder",
+    "switcher.customerDesc": "Post jobs, manage construction & hire",
+    "switcher.kaarigarRole": "Kaarigar / Worker",
+    "switcher.kaarigarDesc": "Get daily work, direct wages & welfare",
+    "switcher.active": "Active",
+    "switcher.demoNotice": "Sample data shown for demo",
+
     // Common
     "common.loading": "Loading...",
     "common.back": "Back",
@@ -159,6 +171,18 @@ const translations = {
     "track.verifyOtp": "ऑन-स्पॉट पिन सत्यापित करें",
     "track.escrowLocked": "एस्क्रो भुगतान सुरक्षित लॉक है",
     "track.releaseCash": "भुगतान जारी करें",
+
+    // Profile & Switching
+    "profile.switchToKaarigar": "कारीगर खाते पर जाएं",
+    "profile.switchToUser": "ग्राहक खाते पर जाएं",
+    "profile.logout": "लॉग आउट",
+    "switcher.title": "खाता बदलें",
+    "switcher.customerRole": "ग्राहक / बिल्डर",
+    "switcher.customerDesc": "काम पोस्ट करें, निर्माण और भर्ती प्रबंधित करें",
+    "switcher.kaarigarRole": "कारीगर / मज़दूर",
+    "switcher.kaarigarDesc": "रोजाना काम, सीधी मजदूरी व कल्याण योजनाएं",
+    "switcher.active": "सक्रिय",
+    "switcher.demoNotice": "डेमो के लिए नमूना डेटा प्रदर्शित है",
 
     // Common
     "common.loading": "लोड हो रहा है...",

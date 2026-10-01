@@ -1,10 +1,12 @@
 /* NIRMAAN Tiny Pub/Sub Store */
+import { DEMO_PERSONAS, getPersona } from "../data/personas.js";
 
 class Store {
   constructor() {
+    const initialRole = localStorage.getItem("nirmaan_role") || "user";
     this.state = {
-      user: this.loadUser(),
-      role: localStorage.getItem("nirmaan_role") || "user", // 'user' | 'kaarigar' | 'admin'
+      role: initialRole, // 'user' | 'kaarigar' | 'admin'
+      user: this.loadUser(initialRole),
       lang: localStorage.getItem("nirmaan_lang") || "hi",
       theme: localStorage.getItem("nirmaan_theme") || "light",
       introSeen: localStorage.getItem("nirmaan_intro_seen") === "true",
@@ -15,13 +17,20 @@ class Store {
     this.listeners = new Map();
   }
 
-  loadUser() {
+  loadUser(role = "user") {
     try {
       const saved = localStorage.getItem("nirmaan_user");
-      return saved ? JSON.parse(saved) : { id: "u-default", name: "Guest User", phone: "+91 98765 43210", role: "user" };
-    } catch {
-      return { id: "u-default", name: "Guest User", phone: "+91 98765 43210", role: "user" };
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Ensure user belongs to the active role persona and not stale "Guest User"
+        if (parsed && parsed.id && parsed.id !== "u-default" && parsed.role === role) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.warn("User load failed", e);
     }
+    return getPersona(role);
   }
 
   get(key) {
@@ -48,6 +57,23 @@ class Store {
     }
     if (this.listeners.has("*")) {
       this.listeners.get("*").forEach(fn => fn(key, value, this.state));
+    }
+  }
+
+  switchRole(newRole) {
+    const role = (newRole === "kaarigar") ? "kaarigar" : "user";
+    const persona = getPersona(role);
+
+    this.set("role", role);
+    this.set("user", persona);
+
+    // Notify UI components without requiring full page reload
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("nirmaan:role-changed", { detail: { role, user: persona } }));
+      const targetHash = role === "kaarigar" ? "#/kaarigar-home" : "#/user-home";
+      if (window.location.hash !== targetHash) {
+        window.location.hash = targetHash;
+      }
     }
   }
 

@@ -38,6 +38,7 @@ export class Router {
     this.container = container;
     currentContainer = container;
     window.addEventListener("hashchange", () => this.handleRoute());
+    window.addEventListener("nirmaan:role-changed", () => this.handleRoute());
   }
 
   start() {
@@ -45,7 +46,36 @@ export class Router {
   }
 
   async handleRoute() {
-    const hash = window.location.hash || "#/";
+    let hash = window.location.hash || "#/";
+    const role = store.get("role") || "user";
+
+    // Role-specific route guards (guard against wrong view and loops)
+    const isCustomerRoute = /^#\/(user-home|find|search|projects|user-profile|customer-dashboard)(\/.*)?$/.test(hash);
+    const isKaarigarRoute = /^#\/(kaarigar-home|worker-dashboard|kaarigar-profile)(\/.*)?$/.test(hash);
+
+    if (role === "kaarigar" && isCustomerRoute) {
+      if (window.location.hash !== "#/kaarigar-home") {
+        window.location.hash = "#/kaarigar-home";
+        return;
+      }
+    } else if (role === "user" && isKaarigarRoute) {
+      if (window.location.hash !== "#/user-home") {
+        window.location.hash = "#/user-home";
+        return;
+      }
+    }
+
+    // Hide desktop AI FAB on splash, auth, onboarding, and voice assistant pages
+    const aiFab = document.getElementById("ai-fab");
+    if (aiFab) {
+      const hideFab = ["#/", "", "#/auth", "#/onboarding", "#/voice-assistant", "#/kaarigar-ai", "#/ai"].includes(hash);
+      if (hideFab) {
+        aiFab.style.setProperty("display", "none", "important");
+      } else {
+        aiFab.style.removeProperty("display");
+      }
+    }
+
     const token = ++navToken;
 
     let matchedRoute = null;

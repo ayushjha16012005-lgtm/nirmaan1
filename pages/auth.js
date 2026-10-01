@@ -1,5 +1,6 @@
 /* NIRMAAN Phone OTP Auth Page */
 import { showToast } from "../core/ui.js";
+import { getPersona } from "../data/personas.js";
 
 export default {
   route: "#/auth",
@@ -108,12 +109,13 @@ export default {
           if (otp === "1234" || otp.length === 4) {
             showToast("Login Successful! 🎉");
             
-            // Set session in store
+            // Set session in store with safe masked persona
+            const basePersona = getPersona(role);
+            const maskedPhone = enteredPhone ? `+91 ${enteredPhone.slice(0, 2)}•••• ••${enteredPhone.slice(-2)}` : basePersona.phone;
+            store.set("role", role);
             store.set("user", {
-              id: role === "kaarigar" ? "k-ramesh" : "u-aman",
-              name: role === "kaarigar" ? "Ramesh Yadav" : "Aman Sharma",
-              phone: `+91 ${enteredPhone || "9876543210"}`,
-              role: role,
+              ...basePersona,
+              phone: maskedPhone,
               verified: true
             });
 
