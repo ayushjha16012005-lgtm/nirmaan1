@@ -22,7 +22,9 @@ const routes = [
   { pattern: /^#\/voice-assistant$/, loader: () => import("../pages/kaarigar-ai.js") },
   { pattern: /^#\/ai$/, loader: () => import("../pages/kaarigar-ai.js") },
   { pattern: /^#\/kaarigar-profile$/, loader: () => import("../pages/kaarigar-profile.js") },
-  { pattern: /^#\/admin$/, loader: () => import("../pages/admin.js") }
+  { pattern: /^#\/admin$/, loader: () => import("../pages/admin.js") },
+  { pattern: /^#\/privacy$/, loader: () => import("../pages/legal.js") },
+  { pattern: /^#\/terms$/, loader: () => import("../pages/legal.js") }
 ];
 
 let currentPage = null;
@@ -47,9 +49,43 @@ export class Router {
 
   async handleRoute() {
     let hash = window.location.hash || "#/";
+    const user = store.get("user");
     const role = store.get("role") || "user";
 
-    // Role-specific route guards (guard against wrong view and loops)
+    // 1. Public route definition
+    const isPublicRoute = ["#/", "", "#/auth", "#/install", "#/privacy", "#/terms"].includes(hash) || 
+                          hash.startsWith("#/privacy") || 
+                          hash.startsWith("#/terms");
+
+    // 2. Authentication guard for signed-out users
+    if (!user && !isPublicRoute) {
+      sessionStorage.setItem("nirmaan_redirect_after_login", hash);
+      if (window.location.hash !== "#/auth") {
+        window.location.hash = "#/auth";
+      }
+      return;
+    }
+
+    // 3. First-login onboarding guard
+    if (user?.needsOnboarding && !hash.startsWith("#/onboarding")) {
+      if (window.location.hash !== "#/onboarding") {
+        window.location.hash = "#/onboarding";
+      }
+      return;
+    }
+
+    // 4. Admin route guard (Phase 3h)
+    if (hash.startsWith("#/admin")) {
+      if (!user || !user.isAdmin) {
+        const fallback = role === "kaarigar" ? "#/kaarigar-home" : "#/user-home";
+        if (window.location.hash !== fallback) {
+          window.location.hash = fallback;
+        }
+        return;
+      }
+    }
+
+    // 5. Role-specific route guards (guard against wrong view and loops)
     const isCustomerRoute = /^#\/(user-home|find|search|projects|user-profile|customer-dashboard)(\/.*)?$/.test(hash);
     const isKaarigarRoute = /^#\/(kaarigar-home|worker-dashboard|kaarigar-profile)(\/.*)?$/.test(hash);
 

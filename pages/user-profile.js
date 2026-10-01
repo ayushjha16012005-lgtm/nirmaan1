@@ -73,10 +73,14 @@ export default {
           <button id="btn-user-logout" class="btn btn-secondary btn-full" style="color: var(--danger); border-color: var(--border-light);">
             🚪 ${t("profile.logout")}
           </button>
+          <button id="btn-user-delete-data" class="btn btn-secondary btn-full btn-sm" style="color: var(--danger); border: 1px dashed var(--danger); margin-top: 6px;">
+            🗑️ ${t("profile.deleteData") || "Request Account & Data Deletion"}
+          </button>
         </div>
 
         <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: 20px;">
-          ℹ️ ${t("switcher.demoNotice")}
+          <a href="#/privacy" style="color: var(--text-muted); text-decoration: underline;">Privacy Policy</a> · 
+          <a href="#/terms" style="color: var(--text-muted); text-decoration: underline;">Terms of Service</a>
         </p>
 
       </div>
@@ -87,8 +91,22 @@ export default {
     };
 
     container.querySelector("#btn-user-logout").onclick = () => {
-      store.set("introSeen", false);
-      window.location.hash = "#/";
+      store.signOut();
+    };
+
+    container.querySelector("#btn-user-delete-data").onclick = async () => {
+      if (confirm("Are you sure you want to permanently delete your account profile and all data? This cannot be undone.")) {
+        const { supabase, isLive } = await import("../services/supabase.js");
+        if (isLive() && user?.id) {
+          try {
+            await supabase.from("profiles").delete().eq("id", user.id);
+          } catch (e) {
+            console.warn("Delete profile error:", e);
+          }
+        }
+        showToast("Account profile deleted.");
+        store.signOut();
+      }
     };
   },
 

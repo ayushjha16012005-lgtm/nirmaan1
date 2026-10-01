@@ -13,16 +13,19 @@ class App {
     this.boot();
   }
 
-  boot() {
+  async boot() {
     // 1. Theme Initialization
     initTheme();
 
-    // 2. Global Layout Rendering
+    // 2. Initialize Auth Session
+    await store.initAuth();
+
+    // 3. Global Layout Rendering
     renderHeader();
     renderFooter();
     renderBottomNav();
 
-    // 3. Global Navbar Scroll Shadows
+    // 4. Global Navbar Scroll Shadows
     window.addEventListener("scroll", () => {
       const nav = document.querySelector("nav");
       if (nav) {
@@ -34,11 +37,11 @@ class App {
       }
     });
 
-    // 4. Start Router
+    // 5. Start Router
     this.router = new Router(this.contentContainer);
     this.router.start();
 
-    // 5. Scroll Reveal Observer
+    // 6. Scroll Reveal Observer
     initScrollReveal();
 
     // 6. Listen for state updates to re-render layout
