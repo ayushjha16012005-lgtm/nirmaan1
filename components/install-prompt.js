@@ -159,21 +159,25 @@ export function showInstallPrompt() {
         ` : `
           <!-- Action Buttons Area -->
           <div id="install-actions-box" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px;">
-            <button id="btn-popup-install-apk" class="btn btn-primary btn-full" style="font-weight: 800; font-size: 1rem; padding: 13px; box-shadow: 0 4px 18px rgba(232,98,26,0.4); display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <a id="btn-popup-install-apk" href="${APK_DOWNLOAD_URL}" class="btn btn-primary btn-full" style="font-weight: 800; font-size: 1rem; padding: 13px; box-shadow: 0 4px 18px rgba(232,98,26,0.4); display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; color: #ffffff;">
               <span>📲</span>
-              <span>Install App (Download APK) • ऐप इंस्टॉल करें</span>
-            </button>
+              <span>Install APK (Redirect to GitHub) • ऐप इंस्टॉल करें</span>
+            </a>
 
-            <button id="btn-popup-pwa-install" class="btn btn-outline btn-full" style="font-weight: 600; font-size: 0.84rem; padding: 9px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <a href="https://github.com/ayushjha16012005-lgtm/nirmaan1/releases/latest" target="_blank" rel="noopener noreferrer" style="font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 5px; text-decoration: underline;">
+              <span>🐙</span> <span>Or open GitHub Releases page (v1.0.13)</span>
+            </a>
+
+            <button id="btn-popup-pwa-install" class="btn btn-outline btn-full" style="font-weight: 600; font-size: 0.84rem; padding: 9px; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 2px;">
               <span>⚡</span>
-              <span>Add to Home Screen (Instant Web App / बिना APK)</span>
+              <span>Add to Home Screen via Chrome (बिना APK)</span>
             </button>
           </div>
         `}
 
         <div id="post-download-buttons" style="display: none; flex-direction: column; gap: 8px; margin-bottom: 12px;">
           <a id="btn-popup-redownload" href="${APK_DOWNLOAD_URL}" class="btn btn-secondary btn-full" style="font-weight: 700; font-size: 0.88rem; padding: 9px; text-decoration: none;">
-            🔄 Download Again (अगर डाउनलोड न हुआ हो)
+            🔄 Redirect to GitHub Again (फिर से डाउनलोड करें)
           </a>
           <button id="btn-popup-post-done" class="btn btn-primary btn-full" style="font-weight: 700; font-size: 0.88rem; padding: 9px;">
             ✓ Continue to Website (वेबसाइट पर जारी रखें)
@@ -189,25 +193,18 @@ export function showInstallPrompt() {
 
     document.body.appendChild(modal);
 
-    // 1. Primary APK Install / Download Trigger
+    // 1. Primary APK Install / GitHub Redirection Trigger
     const apkBtn = modal.querySelector("#btn-popup-install-apk");
     const guideBox = modal.querySelector("#install-step-guide");
     const actionsBox = modal.querySelector("#install-actions-box");
     const postBtns = modal.querySelector("#post-download-buttons");
 
     if (apkBtn) {
-      apkBtn.onclick = () => {
-        // Trigger APK download directly in phone browser
-        const downloadLink = document.createElement("a");
-        downloadLink.href = APK_DOWNLOAD_URL;
-        downloadLink.download = "Nirmaan.apk";
-        downloadLink.target = "_blank";
-        downloadLink.rel = "noopener noreferrer";
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
+      apkBtn.onclick = (e) => {
+        // Directly navigate/redirect to GitHub APK download
+        window.location.href = APK_DOWNLOAD_URL;
 
-        // Show install instructions banner
+        // Show install instructions banner for return visitors
         if (guideBox) guideBox.style.display = "block";
         if (actionsBox) actionsBox.style.display = "none";
         if (postBtns) postBtns.style.display = "flex";

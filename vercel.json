@@ -5,6 +5,11 @@
   "installCommand": "npm ci",
   "redirects": [
     {
+      "source": "/apk",
+      "destination": "https://github.com/ayushjha16012005-lgtm/nirmaan1/releases/latest/download/Nirmaan.apk",
+      "permanent": false
+    },
+    {
       "source": "/download-apk",
       "destination": "https://github.com/ayushjha16012005-lgtm/nirmaan1/releases/latest/download/Nirmaan.apk",
       "permanent": false
@@ -12,6 +17,16 @@
     {
       "source": "/nirmaan.apk",
       "destination": "https://github.com/ayushjha16012005-lgtm/nirmaan1/releases/latest/download/Nirmaan.apk",
+      "permanent": false
+    },
+    {
+      "source": "/install-apk",
+      "destination": "https://github.com/ayushjha16012005-lgtm/nirmaan1/releases/latest/download/Nirmaan.apk",
+      "permanent": false
+    },
+    {
+      "source": "/github",
+      "destination": "https://github.com/ayushjha16012005-lgtm/nirmaan1/releases/latest",
       "permanent": false
     }
   ],
