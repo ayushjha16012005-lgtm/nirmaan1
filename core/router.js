@@ -24,7 +24,8 @@ const routes = [
   { pattern: /^#\/kaarigar-profile$/, loader: () => import("../pages/kaarigar-profile.js") },
   { pattern: /^#\/admin$/, loader: () => import("../pages/admin.js") },
   { pattern: /^#\/privacy$/, loader: () => import("../pages/legal.js") },
-  { pattern: /^#\/terms$/, loader: () => import("../pages/legal.js") }
+  { pattern: /^#\/terms$/, loader: () => import("../pages/legal.js") },
+  { pattern: /^#\/404$/, loader: () => import("../pages/not-found.js") }
 ];
 
 let currentPage = null;
@@ -127,7 +128,11 @@ export class Router {
     }
 
     if (!matchedRoute) {
-      matchedRoute = routes[0];
+      if (!hash || hash === "#" || hash === "#/") {
+        matchedRoute = routes[0];
+      } else {
+        matchedRoute = { loader: () => import("../pages/not-found.js") };
+      }
     }
 
     // Call unmount on previous page

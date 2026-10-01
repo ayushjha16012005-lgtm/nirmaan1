@@ -1,6 +1,6 @@
 /* NIRMAAN Kaarigar Home — Real Worker Job Acceptance & Welfare Portal */
 import { renderBottomNav } from "../components/bottom-nav.js";
-import { escape, showToast } from "../core/ui.js";
+import { escape, showToast, formatCurrency } from "../core/ui.js";
 import { api } from "../services/api.js";
 import { realtime } from "../services/realtime.js";
 import { store } from "../core/store.js";
@@ -73,8 +73,8 @@ export default {
               <div style="background: linear-gradient(135deg, var(--green), #1b4332); color: white; border-radius: var(--radius-md); padding: 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; box-shadow: 0 6px 20px rgba(45,106,79,0.25);">
                 <div>
                   <span style="font-size: 0.72rem; opacity: 0.85; text-transform: uppercase; font-weight: 700; display: block;">Protected Wage</span>
-                  <div style="font-size: 1.6rem; font-weight: 800;">₹${pendingOffer.amount}</div>
-                  <span style="font-size: 0.72rem; opacity: 0.85;">(₹${pendingOffer.rate}/${pendingOffer.rate_type || "day"} · ${pendingOffer.days || 1} day work)</span>
+                  <div style="font-size: 1.6rem; font-weight: 800;">${formatCurrency(pendingOffer.amount)}</div>
+                  <span style="font-size: 0.72rem; opacity: 0.85;">(${formatCurrency(pendingOffer.rate)}/${escape(pendingOffer.rate_type || "day")} · ${pendingOffer.days || 1} day work)</span>
                 </div>
                 <span style="font-size: 2.2rem;">💰</span>
               </div>
@@ -94,7 +94,7 @@ export default {
             <div class="card" style="padding: 18px; margin-bottom: 20px; border: 1.5px solid var(--saffron-border); background: var(--bg-secondary);">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                 <span class="badge badge-saffron">⚡ Active Job in Progress</span>
-                <span style="font-size: 1.1rem; font-weight: 800; color: var(--green);">₹${ongoingJob.amount}</span>
+                <span style="font-size: 1.1rem; font-weight: 800; color: var(--green);">${formatCurrency(ongoingJob.amount)}</span>
               </div>
               <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 2px;">
                 ${escape(ongoingJob.jobTitle || ongoingJob.title)}
@@ -123,7 +123,7 @@ export default {
                   ${t("kaarigar.earnings")} (${t("kaarigar.thisMonth")})
                 </span>
                 <div style="font-size: 1.8rem; font-weight: 800; color: var(--saffron);">
-                  ₹${totalEarnings.toLocaleString()}
+                  ${formatCurrency(totalEarnings)}
                 </div>
               </div>
               <span class="badge badge-verified" style="font-size: 0.75rem;">100% Direct Payout</span>

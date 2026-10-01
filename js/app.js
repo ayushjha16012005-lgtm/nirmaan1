@@ -6,6 +6,7 @@ import { renderHeader } from "../components/header.js";
 import { renderFooter } from "../components/footer.js";
 import { renderBottomNav } from "../components/bottom-nav.js";
 import { initScrollReveal } from "../core/observer.js";
+import { initOfflineBanner } from "../core/ui.js";
 
 class App {
   constructor() {
@@ -14,6 +15,9 @@ class App {
   }
 
   async boot() {
+    // 0. Global Offline Banner
+    initOfflineBanner();
+
     // 1. Theme Initialization
     initTheme();
 

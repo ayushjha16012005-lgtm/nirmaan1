@@ -1,5 +1,5 @@
 /* NIRMAAN Kaarigar Detail & Gallery Page */
-import { escape } from "../core/ui.js";
+import { escape, formatCurrency, formatDateIST } from "../core/ui.js";
 
 export default {
   route: "#/kaarigar/:id",
@@ -11,15 +11,23 @@ export default {
 
     const { data: worker } = await api.getWorker(workerId);
     if (!worker) {
-      container.innerHTML = `<div class="container" style="padding:40px; text-align:center;"><h3>Worker not found</h3><a href="#/user-home" class="btn btn-secondary">Back</a></div>`;
+      container.innerHTML = `
+        <div class="container" style="padding:40px 16px; text-align:center;">
+          <h3 style="font-weight: 800; color: var(--text-main);">Worker not found</h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin: 8px 0 16px;">This worker profile does not exist or has been removed.</p>
+          <a href="#/user-home" class="btn btn-secondary btn-sm">← Back to Kaarigars</a>
+        </div>
+      `;
       return;
     }
+
+    const { data: reviews } = await api.listReviews(worker.id);
 
     const name = escape(worker.name);
     const role = escape(worker.role);
 
     container.innerHTML = `
-      <div class="container-mobile" style="padding-top: 10px; padding-bottom: 40px;">
+      <div class="container-mobile" style="padding-top: 10px; padding-bottom: 50px;">
         
         <a href="#/user-home" class="btn btn-secondary btn-sm" style="margin-bottom: 16px;">
           ← ${t("common.back")}
@@ -55,7 +63,9 @@ export default {
             </div>
             <div>
               <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Wage Rate</span>
-              <div style="font-size: 1.3rem; font-weight: 800; color: var(--saffron);">₹${worker.rate}<span style="font-size: 0.8rem; color: var(--text-muted);">/${worker.rateType}</span></div>
+              <div style="font-size: 1.3rem; font-weight: 800; color: var(--saffron);">
+                ${formatCurrency(worker.rate)}<span style="font-size: 0.8rem; color: var(--text-muted);">/${worker.rateType || "day"}</span>
+              </div>
             </div>
           </div>
 
@@ -85,13 +95,43 @@ export default {
                 "https://images.unsplash.com/photo-1541888946425-d0fbb180f5f6?w=400&auto=format&fit=crop&q=80",
                 "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&auto=format&fit=crop&q=80"
               ]).map(img => `
-                <img src="${img}" style="width: 100%; height: 110px; object-fit: cover; border-radius: var(--radius-md); border: 1px solid var(--border-light);" alt="Work sample" />
+                <img src="${escape(img)}" style="width: 100%; height: 110px; object-fit: cover; border-radius: var(--radius-md); border: 1px solid var(--border-light);" alt="Work sample" />
               `).join("")}
             </div>
           </div>
 
+          <!-- Customer Reviews Section (Phase 7 Audit) -->
+          <div style="margin-bottom: 24px; border-top: 1px solid var(--border-light); padding-top: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h4 style="font-size: 0.95rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted);">
+                Verified Reviews (${(reviews || []).length})
+              </h4>
+              <span style="font-size: 0.85rem; font-weight: 800; color: var(--gold);">★ ${worker.rating}</span>
+            </div>
+
+            ${(!reviews || reviews.length === 0) ? `
+              <div style="text-align: center; padding: 20px 14px; background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px dashed var(--border-light);">
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">⭐ Be the first to review this verified Kaarigar!</p>
+                <p style="font-size: 0.75rem; color: var(--text-light);">Customer reviews are verified and recorded after escrow sign-off.</p>
+              </div>
+            ` : `
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                ${reviews.map(r => `
+                  <div class="card" style="padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border-light);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                      <span style="font-weight: 700; font-size: 0.88rem;">${escape(r.profiles?.full_name || "Verified Customer")}</span>
+                      <span style="color: var(--gold); font-size: 0.82rem; font-weight: 800;">${"★".repeat(r.rating || 5)}</span>
+                    </div>
+                    <p style="font-size: 0.82rem; color: var(--text-main); margin-bottom: 4px;">${escape(r.comment || "Great work, completed on time.")}</p>
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">${formatDateIST(r.created_at)}</span>
+                  </div>
+                `).join("")}
+              </div>
+            `}
+          </div>
+
           <!-- Hiring CTA -->
-          <button id="btn-proceed-hire" class="btn btn-primary btn-full btn-lg" style="box-shadow: var(--shadow-saffron); font-size: 1.1rem;">
+          <button id="btn-proceed-hire" class="btn btn-primary btn-full btn-lg" style="box-shadow: var(--shadow-saffron); font-size: 1.1rem; font-weight: 800;">
             ⚡ ${t("user.kaarigarBulaye")} (Hire Now)
           </button>
 
