@@ -55,9 +55,13 @@ for (let i = 1; i <= 300; i++) {
   const tradeInfo = TRADES_INFO[i % TRADES_INFO.length];
   const loc = LOCALITIES[(i * 13) % LOCALITIES.length];
 
-  // Slight jitter for coordinates
-  const latOffset = ((i % 17) - 8) * 0.003;
-  const lngOffset = ((i % 19) - 9) * 0.003;
+  // Natural 2D radial scattering across realistic neighborhoods and colonies
+  // Using golden-angle distribution (~137.5 deg) and sqrt radius to prevent diagonal alignment
+  const goldenAngle = 2.39996323; // radians
+  const angle = (i * goldenAngle) % (2 * Math.PI);
+  const radiusKm = 0.3 + Math.sqrt(((i * 7) % 100) / 100) * 2.5; // 0.3 to 2.8 km radius
+  const latOffset = (radiusKm * Math.cos(angle)) / 111.0;
+  const lngOffset = (radiusKm * Math.sin(angle)) / (111.0 * Math.cos((loc.lat * Math.PI) / 180));
   const lat = Math.round((loc.lat + latOffset) * 10000) / 10000;
   const lng = Math.round((loc.lng + lngOffset) * 10000) / 10000;
 

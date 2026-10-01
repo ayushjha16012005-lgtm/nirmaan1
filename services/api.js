@@ -73,14 +73,29 @@ export const api = {
       }
     }
 
-    // Offline Mock fallback
-    let list = [...SEED_LABOURERS];
+    // Offline Mock fallback with accurate dynamic Haversine distance calculation
+    const centerLat = filters.lat || user?.lat || 28.6280;
+    const centerLng = filters.lng || user?.lng || 77.3649;
+
+    let list = SEED_LABOURERS.map(w => {
+      const R = 6371; // km
+      const dLat = (w.lat - centerLat) * Math.PI / 180;
+      const dLon = (w.lng - centerLng) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(centerLat * Math.PI / 180) * Math.cos(w.lat * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const dist = Math.round(R * c * 10) / 10;
+      return { ...w, distance_km: dist };
+    });
+
     if (filters.trade && filters.trade !== "all") {
       list = list.filter(w => w.trade === filters.trade);
     }
     if (filters.radius) {
-      list = list.filter(w => (w.distance_km || 2) <= filters.radius);
+      list = list.filter(w => w.distance_km <= filters.radius);
     }
+    list.sort((a, b) => a.distance_km - b.distance_km);
     return { data: list, error: null };
   },
 

@@ -23,6 +23,8 @@ export function createMap(el, options = {}) {
   let markers = [];
   let routePolyline = null;
   let workerMarker = null;
+  let radiusCircle = null;
+  let userLocationMarker = null;
 
   return {
     mapInstance: map,
@@ -44,6 +46,7 @@ export function createMap(el, options = {}) {
               border: 3px solid white; box-shadow: 0 4px 14px rgba(0,0,0,0.3);
               display: flex; align-items: center; justify-content: center;
               font-size: 1.2rem; cursor: pointer; transform: translate(-50%, -50%);
+              transition: transform 0.2s ease;
             ">
               ${w.avatar || "👨‍🔧"}
             </div>
@@ -53,11 +56,77 @@ export function createMap(el, options = {}) {
         });
 
         const marker = L.marker([w.lat, w.lng], { icon: customIcon }).addTo(map);
+        marker.bindTooltip(`
+          <div style="font-weight: 700; font-size: 12px; color: #18191B;">${w.name}</div>
+          <div style="font-size: 11px; color: #666;">${w.headline || w.trade_label || "Kaarigar"}</div>
+          <div style="font-size: 11px; font-weight: 700; color: #E8621A;">₹${w.rate}/${w.rate_type || "day"} • ★ ${w.rating_avg || 4.8}</div>
+        `, {
+          direction: "top",
+          offset: [0, -18],
+          opacity: 0.95
+        });
+
         marker.on("click", () => {
           if (onSelect) onSelect(w);
         });
 
         markers.push(marker);
+      });
+    },
+
+    setUserLocation(lat, lng) {
+      if (userLocationMarker) map.removeLayer(userLocationMarker);
+
+      const userIcon = L.divIcon({
+        className: "user-location-pin",
+        html: `
+          <div style="position: relative; width: 22px; height: 22px;">
+            <div style="
+              width: 22px; height: 22px; border-radius: 50%;
+              background: #2D6A4F; border: 3px solid white;
+              box-shadow: 0 0 14px rgba(45,106,79,0.9);
+            "></div>
+            <div style="
+              position: absolute; top: -5px; left: -5px; width: 32px; height: 32px; border-radius: 50%;
+              border: 2px solid #2D6A4F; opacity: 0.6;
+              animation: leafletPulse 2s infinite ease-out;
+              pointer-events: none;
+            "></div>
+          </div>
+        `,
+        iconSize: [22, 22],
+        iconAnchor: [11, 11]
+      });
+
+      userLocationMarker = L.marker([lat, lng], { icon: userIcon, zIndexOffset: 1000 }).addTo(map);
+      userLocationMarker.bindTooltip(`<div style="font-weight:700; font-size:12px; color:#2D6A4F;">📍 Your Location (आपका स्थान)</div>`, {
+        direction: "top",
+        offset: [0, -12],
+        opacity: 0.95
+      });
+    },
+
+    // Compress & expand map to fit selected radius circle
+    setRadius(centerLat, centerLng, radiusKm) {
+      if (radiusCircle) {
+        map.removeLayer(radiusCircle);
+      }
+
+      radiusCircle = L.circle([centerLat, centerLng], {
+        radius: radiusKm * 1000,
+        color: "#E8621A",
+        weight: 2,
+        dashArray: "6, 6",
+        fillColor: "#E8621A",
+        fillOpacity: 0.08
+      }).addTo(map);
+
+      // Smoothly fly and adjust bounds to radius (compress for 2km, expand for 5km/10km/25km)
+      map.flyToBounds(radiusCircle.getBounds(), {
+        padding: [24, 24],
+        maxZoom: 16,
+        duration: 0.8,
+        easeLinearity: 0.25
       });
     },
 
@@ -133,6 +202,9 @@ export function createMap(el, options = {}) {
     },
 
     destroy() {
+      if (radiusCircle) map.removeLayer(radiusCircle);
+      if (userLocationMarker) map.removeLayer(userLocationMarker);
+      markers.forEach(m => map.removeLayer(m));
       map.remove();
     }
   };

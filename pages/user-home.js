@@ -15,6 +15,9 @@ export default {
     const { t, api, store } = ctx;
     renderBottomNav();
 
+    const currentUser = store.get("user");
+    let centerLat = currentUser?.lat || 28.6280;
+    let centerLng = currentUser?.lng || 77.3649;
     let selectedTrade = "all";
     let selectedRadius = 5;
     let searchQuery = "";
@@ -88,9 +91,9 @@ export default {
       </div>
     `;
 
-    // Initialize Map
+    // Initialize Map centered on user location or Noida NCR
     const mapEl = container.querySelector("#discovery-map");
-    mapHelper = createMap(mapEl, { center: [28.6280, 77.3649], zoom: 13 });
+    mapHelper = createMap(mapEl, { center: [centerLat, centerLng], zoom: 13 });
 
     async function updateListAndMap() {
       const listEl = container.querySelector("#kaarigars-list");
@@ -101,6 +104,8 @@ export default {
 
       try {
         const { data: workers, error } = await api.listWorkers({
+          lat: centerLat,
+          lng: centerLng,
           trade: selectedTrade,
           radius: selectedRadius
         });
@@ -122,8 +127,10 @@ export default {
         const countEl = container.querySelector("#kaarigar-count");
         if (countEl) countEl.textContent = filtered.length;
 
-        // Update Map Pins
+        // Update Map Pins, User Location and Radius Bounds (Compress for 2km, Expand for 5/10/25km)
         if (mapHelper) {
+          mapHelper.setUserLocation(centerLat, centerLng);
+          mapHelper.setRadius(centerLat, centerLng, selectedRadius);
           mapHelper.addKaarigarMarkers(filtered, (worker) => {
             showWorkerPreview(worker);
           });
