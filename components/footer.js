@@ -1,5 +1,6 @@
 /* NIRMAAN Footer Component */
 import { t } from "../core/i18n.js";
+import { showInstallPrompt } from "./install-prompt.js";
 
 export function renderFooter() {
   const container = document.getElementById("app-footer");
@@ -14,13 +15,25 @@ export function renderFooter() {
         <p style="font-size: 0.85rem; color: var(--saffron); font-weight: 700; margin-bottom: 12px;">
           ${t("brand.tagline")}
         </p>
-        <p style="font-size: 0.78rem; color: var(--text-muted); max-width: 500px; margin: 0 auto 16px;">
+        <p style="font-size: 0.78rem; color: var(--text-muted); max-width: 500px; margin: 0 auto 14px;">
           India's direct construction labour ecosystem — Verified Kaarigars, Protected Escrow, Zero Middleman.
         </p>
+        <div style="margin-bottom: 14px;">
+          <button id="btn-footer-install-app" class="radius-pill" style="background: var(--bg-secondary); border: 1.5px solid var(--saffron-border); color: var(--saffron); font-size: 0.8rem; font-weight: 700; padding: 6px 16px; cursor: pointer;">
+            📲 Install Nirmaan App / Download APK
+          </button>
+        </div>
         <div style="font-size: 0.75rem; color: var(--text-light);">
           © ${new Date().getFullYear()} Nirmaan India. All rights reserved.
         </div>
       </div>
     </footer>
   `;
+
+  const btn = container.querySelector("#btn-footer-install-app");
+  if (btn) {
+    btn.onclick = () => {
+      showInstallPrompt();
+    };
+  }
 }
