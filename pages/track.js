@@ -8,6 +8,7 @@ import { store } from "../core/store.js";
 import { escape, showToast } from "../core/ui.js";
 import { openChatModal } from "../components/chat-modal.js";
 import { renderProofSection } from "../components/proof-capture.js";
+import { demoResponder } from "../services/demo-responder.js";
 
 let mapHelper = null;
 let unsubTracking = null;
@@ -37,15 +38,25 @@ export default {
     const isWorker = user?.id === job.workerId || store.get("role") === "kaarigar";
     const isCustomer = !isWorker;
     const counterPartyName = isWorker ? job.customerName : job.workerName;
+    const isSeedWorker = Boolean(job.is_seed || job.worker?.is_seed);
 
     let isSharingGps = false;
     let hasRated = false;
 
+    // Start Demo Responder if worker is a seed worker and user is customer
+    if (isCustomer && isSeedWorker && ["requested", "offered", "posted", "accepted", "on_the_way", "in_progress"].includes(job.status)) {
+      demoResponder.watchJob(job, (newStatus) => {
+        job.status = newStatus;
+        render();
+      });
+    }
+
     function getStatusBadge(status) {
       switch (status) {
+        case "requested":
         case "offered":
         case "posted":
-          return `<span class="badge badge-pending">⏳ Job Offered (Waiting for Worker)</span>`;
+          return `<span class="badge badge-pending"><span class="badge-dot" style="animation: nirmaanPing 1.5s infinite;"></span> Waiting for Kaarigar Acceptance...</span>`;
         case "accepted":
           return `<span class="badge badge-verified">✓ Accepted (Preparing for Site)</span>`;
         case "on_the_way":
@@ -54,6 +65,7 @@ export default {
           return `<span class="badge badge-verified">📍 ${t("track.arrived")} (Verify On-Site PIN)</span>`;
         case "in_progress":
           return `<span class="badge badge-saffron">⚡ Work in Progress (काम जारी है)</span>`;
+        case "work_submitted":
         case "completed":
           return `<span class="badge badge-verified">🎉 Work Completed (Review & Settle)</span>`;
         case "approved":
@@ -120,13 +132,15 @@ export default {
             ` : ""}
           </div>
 
-          <!-- Live Map Container -->
-          <div class="map-wrap" id="live-tracking-map" style="height: 280px; margin-bottom: 16px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-light);"></div>
+          <!-- Live GPS Map View -->
+          <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 16px; border: 1px solid var(--border-light);">
+            <div id="live-tracking-map" style="width: 100%; height: 280px; background: #e5e3df;"></div>
+          </div>
 
-          <!-- On-Spot Verification Handshake (Phase 3a/3f) -->
+          <!-- On-Spot Verification Handshake (Phase 3f) -->
           ${job.status !== "settled" && job.status !== "approved" && job.status !== "cancelled" ? `
-            <div class="card" style="padding: 18px; margin-bottom: 16px; background: var(--bg-secondary); border: 1px solid var(--border-light);">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div class="card" style="padding: 18px; margin-bottom: 16px; background: var(--bg-secondary); border: 1.5px solid var(--saffron-border);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <span style="font-size: 1.3rem;">🔑</span>
                   <strong style="font-size: 0.95rem; color: var(--text-main);">On-Spot Security Verification</strong>
@@ -144,16 +158,21 @@ export default {
                     ${job.otp || "4829"}
                   </span>
                 </div>
+                ${isSeedWorker && (job.status === "arrived" || job.status === "accepted" || job.status === "on_the_way") ? `
+                  <button id="btn-simulate-otp" class="btn btn-secondary btn-sm btn-full" style="margin-top: 10px; font-weight: 700; border: 1px dashed var(--saffron);">
+                    ⚡ Simulate Kaarigar Entering PIN (Demo)
+                  </button>
+                ` : ""}
               ` : `
                 <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 10px;">
                   Ask the customer for the 4-digit verification code upon reaching the site to begin work:
                 </p>
                 <div style="display: flex; gap: 10px; align-items: center;">
-                  <input
-                    type="text"
-                    id="otp-verify-input"
-                    class="form-control"
-                    placeholder="• • • •"
+                  <input 
+                    type="text" 
+                    id="otp-verify-input" 
+                    class="form-control" 
+                    placeholder="• • • •" 
                     maxlength="4"
                     inputmode="numeric"
                     style="text-align: center; font-size: 1.3rem; font-weight: 800; letter-spacing: 6px; width: 130px;"
@@ -188,7 +207,7 @@ export default {
               Payment is held securely in the ledger until you inspect and approve the completed work.
             </p>
 
-            ${isCustomer && (job.status === "in_progress" || job.status === "completed" || job.status === "arrived") ? `
+            ${isCustomer && (job.status === "in_progress" || job.status === "work_submitted" || job.status === "completed" || job.status === "arrived") ? `
               <button id="btn-release-escrow" class="btn btn-success btn-full btn-lg" style="box-shadow: 0 8px 24px rgba(45, 106, 79, 0.3); font-weight: 800;">
                 ✓ Approve Work & Release Payment (भुगतान जारी करें)
               </button>
@@ -202,6 +221,12 @@ export default {
                   🧾 View & Print Receipt
                 </button>
               </div>
+            ` : ""}
+
+            ${isCustomer && ["requested", "offered", "posted", "accepted", "on_the_way"].includes(job.status) ? `
+              <button id="btn-cancel-booking" class="btn btn-secondary btn-full btn-sm" style="margin-top: 10px; color: var(--red); border-color: rgba(220, 38, 38, 0.3);">
+                ✕ Cancel Booking
+              </button>
             ` : ""}
           </div>
 
@@ -300,17 +325,43 @@ export default {
         verifyOtpBtn.onclick = async () => {
           const pin = container.querySelector("#otp-verify-input")?.value.trim();
           if (!pin || pin.length < 4) {
-            showToast("Please enter the 4-digit PIN provided by the customer");
+            showToast("Please enter the complete 4-digit PIN provided by customer");
             return;
           }
 
+          verifyOtpBtn.disabled = true;
           const res = await api.verifyJobOtp(job.id, pin);
-          if (res.valid) {
-            showToast("PIN Verified! Status updated to In Progress ⚡");
+          if (res.success) {
+            showToast("Site PIN verified! Work has commenced.");
             job.status = "in_progress";
             render();
           } else {
             showToast("Invalid PIN. Please check with customer.");
+            verifyOtpBtn.disabled = false;
+          }
+        };
+      }
+
+      // 5b. Simulate Kaarigar entering PIN (for Seed workers in demo mode)
+      const simOtpBtn = container.querySelector("#btn-simulate-otp");
+      if (simOtpBtn) {
+        simOtpBtn.onclick = async () => {
+          simOtpBtn.disabled = true;
+          simOtpBtn.innerText = "Verifying PIN...";
+          const res = await api.verifyJobOtp(job.id, job.otp || "4829");
+          if (res?.error) {
+            showToast("PIN error: " + res.error);
+            simOtpBtn.disabled = false;
+            simOtpBtn.innerText = "⚡ Simulate Kaarigar Entering PIN (Demo)";
+          } else {
+            job.status = "in_progress";
+            showToast("PIN verified! Kaarigar has commenced work on site.");
+            render();
+            // Start the in_progress stage in demo responder
+            demoResponder.watchJob(job, (newStatus) => {
+              job.status = newStatus;
+              render();
+            });
           }
         };
       }
@@ -352,6 +403,23 @@ export default {
         };
       }
 
+      // 7b. Customer Cancels Booking
+      const cancelBtn = container.querySelector("#btn-cancel-booking");
+      if (cancelBtn) {
+        cancelBtn.onclick = async () => {
+          if (!confirm("Are you sure you want to cancel this booking? Any escrow hold will be refunded.")) {
+            return;
+          }
+          cancelBtn.disabled = true;
+          cancelBtn.textContent = "Cancelling...";
+          demoResponder.stop();
+          await api.advanceJob(job.id, "cancelled");
+          showToast("Booking cancelled.");
+          job.status = "cancelled";
+          render();
+        };
+      }
+
       // 8. View Printable Receipt
       const receiptBtn = container.querySelector("#btn-view-receipt");
       if (receiptBtn) {
@@ -360,98 +428,125 @@ export default {
         };
       }
 
-      // 9. Review Submission
+      // 9. Star Rating Submission
+      let selectedRating = 5;
+      const starBtns = container.querySelectorAll(".star-btn");
+      starBtns.forEach(btn => {
+        btn.onclick = () => {
+          selectedRating = parseInt(btn.dataset.star);
+          starBtns.forEach((b, idx) => {
+            b.style.opacity = idx < selectedRating ? "1" : "0.3";
+          });
+        };
+      });
+
       const submitReviewBtn = container.querySelector("#btn-submit-review");
       if (submitReviewBtn) {
-        let chosenRating = 5;
-        container.querySelectorAll(".star-btn").forEach(s => {
-          s.onclick = () => {
-            chosenRating = parseInt(s.dataset.star);
-            container.querySelectorAll(".star-btn").forEach((starEl, i) => {
-              starEl.style.opacity = i < chosenRating ? "1.0" : "0.3";
-            });
-          };
-        });
-
         submitReviewBtn.onclick = async () => {
-          const comment = container.querySelector("#review-comment-input")?.value || "";
           submitReviewBtn.disabled = true;
-          await api.submitReview(job.id, chosenRating, comment);
-          hasRated = true;
-          showToast("Thank you! Rating saved to worker's verified profile. ⭐");
-          render();
+          const comment = container.querySelector("#review-comment-input")?.value.trim() || "";
+          
+          const res = await api.submitReview({
+            jobId: job.id,
+            rating: selectedRating,
+            comment: comment
+          });
+
+          if (res.success) {
+            hasRated = true;
+            showToast("Thank you for your rating! Trust score updated.");
+            render();
+          } else {
+            showToast("Error saving rating: " + res.error);
+            submitReviewBtn.disabled = false;
+          }
         };
       }
     }
 
-    function openReceiptModal(j) {
-      const modal = document.createElement("div");
-      modal.className = "account-sheet-backdrop";
-      modal.innerHTML = `
-        <div class="account-sheet" style="padding: 24px; font-family: sans-serif;">
-          <div style="text-align: center; border-bottom: 2px dashed var(--border-light); padding-bottom: 16px; margin-bottom: 16px;">
-            <div style="font-size: 1.5rem; font-weight: 800; color: var(--saffron);">NIRMAAN SETTLEMENT RECEIPT</div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Direct Peer-to-Peer Construction Payment</div>
-            <div style="font-size: 0.72rem; color: var(--text-light); margin-top: 4px;">Txn ID: TXN-${j.id.slice(0, 12).toUpperCase()} · Test Mode</div>
-          </div>
-
-          <div style="font-size: 0.85rem; line-height: 1.8; margin-bottom: 16px;">
-            <div style="display:flex; justify-content:space-between;"><span>Job Title:</span><strong>${escape(j.jobTitle)}</strong></div>
-            <div style="display:flex; justify-content:space-between;"><span>Customer:</span><strong>${escape(j.customerName)}</strong></div>
-            <div style="display:flex; justify-content:space-between;"><span>Kaarigar:</span><strong>${escape(j.workerName)}</strong></div>
-            <div style="display:flex; justify-content:space-between;"><span>Location:</span><strong>${escape(j.location)}</strong></div>
-            <div style="display:flex; justify-content:space-between;"><span>Total Days:</span><strong>${j.days || 1} day(s)</strong></div>
-            <div style="display:flex; justify-content:space-between; border-top: 1px solid var(--border-light); padding-top: 8px; font-size: 1.1rem; color: var(--green); font-weight: 800;">
-              <span>Total Settled:</span><span>₹${j.amount}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size: 0.75rem; color: var(--text-muted);">
-              <span>Middleman Commission:</span><span style="color:var(--green); font-weight:700;">₹0 (100% Direct to Worker)</span>
-            </div>
-          </div>
-
-          <button id="close-receipt-btn" class="btn btn-secondary btn-full btn-sm">Close Receipt</button>
-        </div>
-      `;
-      document.body.appendChild(modal);
-      modal.querySelector("#close-receipt-btn").onclick = () => modal.remove();
-      modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    // Subscribe to worker GPS updates if Customer
+    if (isCustomer) {
+      unsubTracking = tracking.subscribe(
+        job.id,
+        { lat: job.lat, lng: job.lng },
+        (loc) => {
+          if (mapHelper) mapHelper.updateWorkerPos(loc.lat, loc.lng);
+          const etaEl = container.querySelector("#eta-display");
+          if (etaEl) etaEl.textContent = `~${loc.eta_minutes} min`;
+        }
+      );
     }
 
-    render();
-
-    // Subscribe to realtime location tracking
-    unsubTracking = tracking.subscribe(job.id, { lat: job.lat, lng: job.lng }, (loc) => {
-      if (mapHelper) {
-        mapHelper.updateWorkerPos(loc.lat, loc.lng);
-      }
-      const etaEl = container.querySelector("#eta-display");
-      if (etaEl && loc.eta_minutes) {
-        etaEl.textContent = `~${loc.eta_minutes} min`;
-      }
-    });
-
-    // Subscribe to realtime job status changes
+    // Realtime Job Status listener
     unsubJobRealtime = realtime.subscribeJob(job.id, (updatedJob) => {
-      job.status = updatedJob.status;
-      job.escrow_status = updatedJob.escrow_status;
-      job.escrowLocked = (updatedJob.escrow_status === "locked" || updatedJob.escrow_status === "captured");
-      render();
+      if (updatedJob.status && updatedJob.status !== job.status) {
+        job.status = updatedJob.status;
+        render();
+      }
     });
+
+    render();
   },
 
   unmount() {
-    tracking.stopPublishing();
-    if (unsubTracking) {
-      unsubTracking();
-      unsubTracking = null;
-    }
-    if (unsubJobRealtime) {
-      unsubJobRealtime();
-      unsubJobRealtime = null;
-    }
-    if (mapHelper) {
-      mapHelper.destroy();
-      mapHelper = null;
-    }
+    demoResponder.stop();
+    if (unsubTracking) unsubTracking();
+    if (unsubJobRealtime) unsubJobRealtime();
+    if (mapHelper) mapHelper.destroy();
   }
 };
+
+function openReceiptModal(job) {
+  const modal = document.createElement("div");
+  modal.className = "modal-overlay active";
+  modal.innerHTML = `
+    <div class="modal-card card" style="max-width: 480px; padding: 24px;">
+      <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px dashed var(--border-light); padding-bottom: 16px;">
+        <h2 style="font-weight: 900; color: var(--saffron); letter-spacing: 1px;">NIRMAAN</h2>
+        <p style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Official Verified Work Receipt</p>
+        <div style="font-size: 0.72rem; color: var(--text-light); margin-top: 4px;">Receipt Ref: NRMN-${job.id.slice(0, 8).toUpperCase()}</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.88rem; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--text-muted);">Customer:</span>
+          <strong>${escape(job.customerName)}</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--text-muted);">Kaarigar:</span>
+          <strong>${escape(job.workerName)} (${escape(job.workerRole)})</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--text-muted);">Service:</span>
+          <strong>${escape(job.jobTitle)}</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--text-muted);">Location:</span>
+          <span>${escape(job.location)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--border-light); padding-top: 8px;">
+          <span style="color: var(--text-muted);">Payment Mode:</span>
+          <span>Digital Escrow (Secured)</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 900; color: var(--green); border-top: 2px solid var(--border-light); padding-top: 10px;">
+          <span>Total Settled:</span>
+          <span>₹${job.amount}</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button id="btn-print-receipt" class="btn btn-primary btn-full btn-sm" style="font-weight: 700;">
+          🖨️ Print Receipt
+        </button>
+        <button id="btn-close-receipt" class="btn btn-secondary btn-full btn-sm">
+          Close
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  modal.querySelector("#btn-close-receipt").onclick = () => modal.remove();
+  modal.querySelector("#btn-print-receipt").onclick = () => window.print();
+}
